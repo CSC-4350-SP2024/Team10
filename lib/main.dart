@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 
 void main() {
   runApp(TaskApp());
@@ -12,21 +13,7 @@ class TaskApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: TaskListScreen(),
-    );
-  }
-}
-
-class TaskListScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Nav bar'),
-      ),
-      body: Center(
-        child: Text('Task List Here'),
-      ),
+      home: HomepageScreen(),
     );
   }
 }
