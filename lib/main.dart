@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
+import 'nav.dart';
+import 'themes/theme.dart';
 
 void main() {
   runApp(TaskApp());

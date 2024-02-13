@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeContentScreen extends StatefulWidget {
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeContentScreen> createState() => _HomeContentScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _navIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _navIndex = index;
-    });
-  }
-
+class _HomeContentScreenState extends State<HomeContentScreen> {
   Color fontColor = Color.fromARGB(255, 255, 255,
       255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
   Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -104,30 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: navBackgroundColor,
-        currentIndex: _navIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_rounded, color: Colors.white),
-            label: 'Add Task',
-            tooltip: "Add a new task",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white),
-            label: 'Settings',
-          ),
-        ],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Color.fromARGB(255, 204, 204, 204),
-        unselectedIconTheme:
-            IconThemeData(color: Color.fromARGB(255, 131, 131, 131)),
       ),
     );
   }
