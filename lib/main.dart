@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
-import 'addTask.dart';
-import 'settings.dart';
 
 void main() {
   runApp(TaskApp());
 }
+
+final ThemeData defaultTinyTheme = ThemeData(
+  primarySwatch: Colors.blue,
+  fontFamily: 'Oxygen',
+);
 
 class TaskApp extends StatelessWidget {
   @override
