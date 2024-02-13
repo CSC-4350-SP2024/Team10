@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class HomepageScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  State<HomepageScreen> createState() => _HomepageScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomepageScreenState extends State<HomepageScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   int _navIndex = 0;
 
   void _onItemTapped(int index) {
@@ -15,7 +15,7 @@ class _HomepageScreenState extends State<HomepageScreen> {
   }
 
   Color fontColor = Color.fromARGB(255, 255, 255,
-      255); // Styles for the app are stored in variables. Could be used for app preferences.
+      255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
   Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
   Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
 
@@ -34,6 +34,12 @@ class _HomepageScreenState extends State<HomepageScreen> {
     'Go to gym',
     'Get a good nap in before class',
   ];
+
+  List<bool> taskCompletionStatus = List.filled(5,
+      false); // Initial completion status for each task. They are not finished until user does them.
+  Icon checkOff = const Icon(Icons.check_circle_rounded, color: Colors.green);
+  Icon checkOn =
+      const Icon(Icons.radio_button_unchecked_rounded, color: Colors.green);
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +82,16 @@ class _HomepageScreenState extends State<HomepageScreen> {
                         incompleteTasks[index],
                         style: TextStyle(color: fontColor),
                       ),
-                      leading: const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
+                      leading: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            taskCompletionStatus[index] =
+                                !taskCompletionStatus[index];
+                          });
+                        },
+                        child: taskCompletionStatus[index]
+                            ? checkOff
+                            : checkOn, // Change icon based on completion status
                       ),
                       trailing: Icon(
                         Icons.more_vert,
