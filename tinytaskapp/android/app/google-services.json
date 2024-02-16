@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202382514585",
+    "project_id": "tinytask-99a5f",
+    "storage_bucket": "tinytask-99a5f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202382514585:android:882ade15a361502f24db08",
+        "android_client_info": {
+          "package_name": "com.example.tinytaskapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtcrqZDhKdFgPJCJzmhWIA-Ei9oBEHqQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

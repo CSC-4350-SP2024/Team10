@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'homeScreen/home.dart';
-import 'addTask.dart';
-import 'settings.dart';
+import 'processTasks/addTask.dart';
+import 'settings/settings.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
