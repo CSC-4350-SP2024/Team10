@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:tinytaskapp/firebase_options.dart';
 import 'nav.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(TaskApp());
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    runApp(const TaskApp());
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+    // Handle the error gracefully, for example, show a dialog or fallback UI
+  }
 }
 
 final ThemeData defaultTinyTheme = ThemeData(
