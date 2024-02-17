@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.add_circle),
             label: 'Add Task',
           ),
           BottomNavigationBarItem(

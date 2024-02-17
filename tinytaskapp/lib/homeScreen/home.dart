@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 
 int maxTasks = 3; // Maximum number of tasks that can be displayed at once.
+String currentUserId =
+    "ray"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -13,11 +17,36 @@ class HomeContentScreen extends StatefulWidget {
 }
 
 class _HomeContentScreenState extends State<HomeContentScreen> {
+  late final TextEditingController searchController;
+  String searchText = "";
+
   @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+    searchController.addListener(() {
+      setState(() {
+        searchText = searchController.text;
+      });
+    });
+  }
+
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void onSearchTextChanged() {
+    setState(() {
+      searchText = searchController.text;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        // title: const Text('Tiny Tasks'),
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
@@ -35,12 +64,33 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
             ),
           ),
           const SizedBox(height: 20), // Add some space below the header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: searchController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search',
+                hintStyle: const TextStyle(color: Colors.white),
+                prefixIcon: const Icon(Icons.search, color: Colors.white),
+                filled: true,
+                isDense: true,
+                fillColor: navBackgroundColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20), // Add some space below the search bar
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TaskList(),
+              child: TaskList(searchText: searchText),
             ),
           ),
+          const SizedBox(height: 20), // Add some space below the list
         ],
       ),
     );
@@ -48,6 +98,10 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
 }
 
 class TaskList extends StatefulWidget {
+  final String searchText;
+
+  const TaskList({Key? key, required this.searchText}) : super(key: key);
+
   @override
   _TaskListState createState() => _TaskListState();
 }
@@ -68,12 +122,35 @@ class _TaskListState extends State<TaskList> {
             return const Text('Loading...');
           }
 
+          final query = widget.searchText.toLowerCase();
+          final filteredTasks = snapshot.data!.docs.where((task) {
+            final taskName = task['name'] as String?;
+            final taskDescription = task['desc'] as String?;
+            final taskUser = task['userID'] as String?;
+
+            if (query.isEmpty) {
+              taskName != null &&
+                  taskDescription != null &&
+                  taskUser == currentUserId;
+            }
+
+            return taskName != null &&
+                taskDescription != null &&
+                (taskName.toLowerCase().contains(query) ||
+                    taskDescription.toLowerCase().contains(query)) &&
+                taskUser ==
+                    currentUserId; // Only show tasks that belong to the current user.
+          }).toList(); // filteredTasks returns a filtered list of items based on userID and further filtered by the search text.
+
           return ListView.builder(
-            itemCount: maxTasks,
+            itemCount: filteredTasks.length > maxTasks
+                ? maxTasks
+                : filteredTasks.length,
             itemBuilder: (context, index) {
-              final currentTask = snapshot.data!.docs[index];
+              final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";
               final isCompleted = currentTask['isComplete'] ?? false;
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
@@ -92,7 +169,6 @@ class _TaskListState extends State<TaskList> {
                   ),
                   leading: GestureDetector(
                     onTap: () {
-                      // Updates the task's completion status when the user taps the checkbox.
                       currentTask.reference
                           .update({'isComplete': !isCompleted});
                     },
@@ -102,7 +178,15 @@ class _TaskListState extends State<TaskList> {
                         : const Icon(Icons.radio_button_unchecked_rounded,
                             color: Colors.green),
                   ),
-                  trailing: Icon(Icons.more_vert, color: Colors.white),
+                  onLongPress: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EditTaskScreen(
+                          currentTask: currentTask,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },
