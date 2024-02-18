@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
@@ -55,10 +58,20 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
+              "Today is ${DateFormat('EEEE').format(DateTime.now())}",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: fontColor,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
               'To do',
               style: TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
                 color: fontColor,
               ),
             ),
@@ -107,6 +120,17 @@ class TaskList extends StatefulWidget {
 }
 
 class _TaskListState extends State<TaskList> {
+  bool _isDue(Timestamp? currTaskDueTimestamp) {
+    if (currTaskDueTimestamp == null) {
+      return false;
+    }
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDate = DateTime(currTaskDueTimestamp.toDate().year,
+        currTaskDueTimestamp.toDate().month, currTaskDueTimestamp.toDate().day);
+    return today.isAtSameMomentAs(dueDate);
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -127,19 +151,22 @@ class _TaskListState extends State<TaskList> {
             final taskName = task['name'] as String?;
             final taskDescription = task['desc'] as String?;
             final taskUser = task['userID'] as String?;
+            final taskDueTimestamp = task['due'] as Timestamp?;
 
             if (query.isEmpty) {
               taskName != null &&
                   taskDescription != null &&
-                  taskUser == currentUserId;
+                  taskUser == currentUserId &&
+                  _isDue(taskDueTimestamp);
             }
 
             return taskName != null &&
                 taskDescription != null &&
                 (taskName.toLowerCase().contains(query) ||
                     taskDescription.toLowerCase().contains(query)) &&
-                taskUser ==
-                    currentUserId; // Only show tasks that belong to the current user.
+                taskUser == currentUserId &&
+                _isDue(
+                    taskDueTimestamp); // Only show tasks that belong to the current user.
           }).toList(); // filteredTasks returns a filtered list of items based on userID and further filtered by the search text.
 
           return ListView.builder(
@@ -150,18 +177,21 @@ class _TaskListState extends State<TaskList> {
               final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";
               final isCompleted = currentTask['isComplete'] ?? false;
+              final isUrgent = currentTask['isUrgent'] ?? false;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: navBackgroundColor,
+                  color: isUrgent
+                      ? Color.fromARGB(255, 255, 187, 0)
+                      : navBackgroundColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ListTile(
                   title: Text(
                     taskTitle,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: isUrgent ? Colors.black : Colors.white,
                       decoration: isCompleted
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,

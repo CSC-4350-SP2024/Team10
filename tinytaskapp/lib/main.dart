@@ -12,7 +12,7 @@ void main() async {
     runApp(const TaskApp());
   } catch (e) {
     print('Error initializing Firebase: $e');
-    // Handle the error gracefully, for example, show a dialog or fallback UI
+    // Handle the error gracefully
   }
 }
 

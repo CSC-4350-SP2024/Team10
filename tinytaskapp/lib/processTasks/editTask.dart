@@ -15,7 +15,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.currentTask['name']),
+        title: Text("Edit ${widget.currentTask['name']}"),
       ),
       body: Container(
           // Add your UI components here
