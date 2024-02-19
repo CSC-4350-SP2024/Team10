@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 
 int maxTasks = 3; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
-    "ray"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
+    "Humayra"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -39,72 +39,82 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
     super.dispose();
   }
 
-  void onSearchTextChanged() {
-    setState(() {
-      searchText = searchController.text;
-    });
-  }
-
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        // title: const Text('Tiny Tasks'),
-        backgroundColor: backgroundColor,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              "Today is ${DateFormat('EEEE').format(DateTime.now())}",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: fontColor,
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+            backgroundColor,
+            const Color.fromARGB(255, 31, 48, 66)
+          ])),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: RichText(
+                text: TextSpan(children: <TextSpan>[
+                  TextSpan(
+                    text: "Today is ",
+                    style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: fontColor),
+                  ),
+                  TextSpan(
+                    text: "${DateFormat('EEEE').format(DateTime.now())}",
+                    style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.greenAccent[400]!),
+                  ),
+                ]),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'To do',
-              style: TextStyle(
-                fontSize: 24,
-                color: fontColor,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20), // Add some space below the header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: searchController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Search',
-                hintStyle: const TextStyle(color: Colors.white),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                filled: true,
-                isDense: true,
-                fillColor: navBackgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'To do',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: fontColor,
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 20), // Add some space below the search bar
-          Expanded(
-            child: Padding(
+            const SizedBox(height: 20), // Add some space below the header
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                controller: searchController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  hintStyle: const TextStyle(color: Colors.white),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white),
+                  filled: true,
+                  isDense: true,
+                  fillColor: opacnavBackgroundColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20), // Add some space below the search bar
+            Expanded(
               child: TaskList(searchText: searchText),
             ),
-          ),
-          const SizedBox(height: 20), // Add some space below the list
-        ],
+            const SizedBox(height: 20), // Add some space below the list
+          ],
+        ),
       ),
     );
   }
@@ -126,72 +136,109 @@ class _TaskListState extends State<TaskList> {
     }
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final dueDate = DateTime(currTaskDueTimestamp.toDate().year,
-        currTaskDueTimestamp.toDate().month, currTaskDueTimestamp.toDate().day);
+    final dueDate = DateTime(
+      currTaskDueTimestamp.toDate().year,
+      currTaskDueTimestamp.toDate().month,
+      currTaskDueTimestamp.toDate().day,
+    );
     return today.isAtSameMomentAs(dueDate);
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Uh oh! Something went wrong.');
-          }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Text('No tasks found.');
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text('Loading...');
-          }
-
-          final query = widget.searchText.toLowerCase();
-          final filteredTasks = snapshot.data!.docs.where((task) {
-            final taskName = task['name'] as String?;
-            final taskDescription = task['desc'] as String?;
-            final taskUser = task['userID'] as String?;
-            final taskDueTimestamp = task['due'] as Timestamp?;
-
-            if (query.isEmpty) {
-              taskName != null &&
-                  taskDescription != null &&
-                  taskUser == currentUserId &&
-                  _isDue(taskDueTimestamp);
-            }
-
-            return taskName != null &&
-                taskDescription != null &&
-                (taskName.toLowerCase().contains(query) ||
-                    taskDescription.toLowerCase().contains(query)) &&
-                taskUser == currentUserId &&
-                _isDue(
-                    taskDueTimestamp); // Only show tasks that belong to the current user.
-          }).toList(); // filteredTasks returns a filtered list of items based on userID and further filtered by the search text.
-
-          return ListView.builder(
-            itemCount: filteredTasks.length > maxTasks
-                ? maxTasks
-                : filteredTasks.length,
-            itemBuilder: (context, index) {
-              final currentTask = filteredTasks[index];
-              final taskTitle = currentTask['name'] ?? " ";
-              final isCompleted = currentTask['isComplete'] ?? false;
-              final isUrgent = currentTask['isUrgent'] ?? false;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: isUrgent
-                      ? Color.fromARGB(255, 255, 187, 0)
-                      : navBackgroundColor,
-                  borderRadius: BorderRadius.circular(20),
+      stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Text('Uh oh! Something went wrong.');
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Image.asset(
+                  'lib/assets/confetti.gif',
+                  width: 400,
+                  height: 400,
+                  fit: BoxFit.cover,
                 ),
+                const SizedBox(height: 5),
+                const Text(
+                  'You\'re all caught up!',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('Loading...');
+        }
+
+        final query = widget.searchText.toLowerCase();
+        final filteredTasks = snapshot.data!.docs.where((task) {
+          final taskName = task['name'] as String?;
+          final taskDescription = task['desc'] as String?;
+          final taskUser = task['userID'] as String?;
+          final taskDueTimestamp = task['due'] as Timestamp?;
+
+          if (query.isEmpty) {
+            taskName != null &&
+                taskDescription != null &&
+                taskUser == currentUserId &&
+                _isDue(taskDueTimestamp);
+          }
+
+          return taskName != null &&
+              taskDescription != null &&
+              (taskName.toLowerCase().contains(query) ||
+                  taskDescription.toLowerCase().contains(query)) &&
+              taskUser == currentUserId &&
+              _isDue(
+                  taskDueTimestamp); // Only show tasks that belong to the current user.
+        }).toList(); // filteredTasks returns a filtered list of items based on userID and further filtered by the search text.
+
+        filteredTasks.sort((a, b) {
+          bool isUrgentA = a['isUrgent'] ?? false;
+          bool isUrgentB = b['isUrgent'] ?? false;
+
+          if (isUrgentA && !isUrgentB) {
+            return -1;
+          } else if (!isUrgentA && isUrgentB) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        return ListView.builder(
+          itemCount:
+              filteredTasks.length > maxTasks ? maxTasks : filteredTasks.length,
+          itemBuilder: (context, index) {
+            final currentTask = filteredTasks[index];
+            final taskTitle = currentTask['name'] ?? " ";
+            final isCompleted = currentTask['isComplete'] ?? false;
+            final isUrgent = currentTask['isUrgent'] ?? false;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: isUrgent
+                    ? Color.fromARGB(255, 247, 192, 42)
+                    : navBackgroundColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                height: 70,
                 child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
                   title: Text(
                     taskTitle,
                     style: TextStyle(
                       color: isUrgent ? Colors.black : Colors.white,
+                      fontSize: 20,
+                      fontWeight: isUrgent ? FontWeight.w400 : FontWeight.w300,
                       decoration: isCompleted
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
@@ -200,7 +247,13 @@ class _TaskListState extends State<TaskList> {
                   leading: GestureDetector(
                     onTap: () {
                       currentTask.reference
-                          .update({'isComplete': !isCompleted});
+                          .update({'isComplete': true}).then((_) {
+                        // Task marked as completed, now delete it
+                        currentTask.reference.delete();
+                      }).catchError((error) {
+                        // Handle error while updating task
+                        print("Failed to mark task as completed: $error");
+                      });
                     },
                     child: isCompleted
                         ? const Icon(Icons.check_circle_rounded,
@@ -218,9 +271,11 @@ class _TaskListState extends State<TaskList> {
                     );
                   },
                 ),
-              );
-            },
-          );
-        });
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
