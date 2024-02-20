@@ -6,9 +6,9 @@ import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
-int maxTasks = 3; // Maximum number of tasks that can be displayed at once.
+int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
-    "Humayra"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
+    "ray"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -100,7 +100,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
                   prefixIcon: const Icon(Icons.search, color: Colors.white),
                   filled: true,
                   isDense: true,
-                  fillColor: opacnavBackgroundColor,
+                  fillColor: navBackgroundColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide.none,
@@ -152,6 +152,7 @@ class _TaskListState extends State<TaskList> {
         if (snapshot.hasError) {
           return const Text('Uh oh! Something went wrong.');
         }
+
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return SingleChildScrollView(
             child: Column(
@@ -211,69 +212,74 @@ class _TaskListState extends State<TaskList> {
           }
         });
 
-        return ListView.builder(
-          itemCount:
-              filteredTasks.length > maxTasks ? maxTasks : filteredTasks.length,
-          itemBuilder: (context, index) {
-            final currentTask = filteredTasks[index];
-            final taskTitle = currentTask['name'] ?? " ";
-            final isCompleted = currentTask['isComplete'] ?? false;
-            final isUrgent = currentTask['isUrgent'] ?? false;
+        return Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: ListView.builder(
+            itemCount: filteredTasks.length > maxTasks
+                ? maxTasks
+                : filteredTasks.length,
+            itemBuilder: (context, index) {
+              final currentTask = filteredTasks[index];
+              final taskTitle = currentTask['name'] ?? " ";
+              final isCompleted = currentTask['isComplete'] ?? false;
+              final isUrgent = currentTask['isUrgent'] ?? false;
 
-            return Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: isUrgent
-                    ? Color.fromARGB(255, 247, 192, 42)
-                    : navBackgroundColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Container(
-                height: 70,
-                child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                  title: Text(
-                    taskTitle,
-                    style: TextStyle(
-                      color: isUrgent ? Colors.black : Colors.white,
-                      fontSize: 20,
-                      fontWeight: isUrgent ? FontWeight.w400 : FontWeight.w300,
-                      decoration: isCompleted
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                    ),
-                  ),
-                  leading: GestureDetector(
-                    onTap: () {
-                      currentTask.reference
-                          .update({'isComplete': true}).then((_) {
-                        // Task marked as completed, now delete it
-                        currentTask.reference.delete();
-                      }).catchError((error) {
-                        // Handle error while updating task
-                        print("Failed to mark task as completed: $error");
-                      });
-                    },
-                    child: isCompleted
-                        ? const Icon(Icons.check_circle_rounded,
-                            color: Colors.green)
-                        : const Icon(Icons.radio_button_unchecked_rounded,
-                            color: Colors.green),
-                  ),
-                  onLongPress: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EditTaskScreen(
-                          currentTask: currentTask,
-                        ),
-                      ),
-                    );
-                  },
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: isUrgent
+                      ? Color.fromARGB(255, 247, 192, 42)
+                      : navBackgroundColor,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ),
-            );
-          },
+                child: Container(
+                  height: 70,
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                    title: Text(
+                      taskTitle,
+                      style: TextStyle(
+                        color: isUrgent ? Colors.black : Colors.white,
+                        fontSize: 20,
+                        fontWeight:
+                            isUrgent ? FontWeight.w400 : FontWeight.w300,
+                        decoration: isCompleted
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
+                    leading: GestureDetector(
+                      onTap: () {
+                        currentTask.reference
+                            .update({'isComplete': true}).then((_) {
+                          // Task marked as completed, now delete it
+                          currentTask.reference.delete();
+                        }).catchError((error) {
+                          // Handle error while updating task
+                          print("Failed to mark task as completed: $error");
+                        });
+                      },
+                      child: isCompleted
+                          ? const Icon(Icons.check_circle_rounded,
+                              color: Colors.green)
+                          : const Icon(Icons.radio_button_unchecked_rounded,
+                              color: Colors.green),
+                    ),
+                    onLongPress: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => EditTaskScreen(
+                            currentTask: currentTask,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
         );
       },
     );
