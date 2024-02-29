@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'homeScreen/home.dart';
 import 'processTasks/addTask.dart';
 import 'settings/settings.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '/processTasks/addTask.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,9 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _onNavIndexChanged(int newIndex) {
+    setState(() {
+      _navIndex = newIndex;
+    });
+  }
+
   final List<Widget> _screens = [
     HomeContentScreen(),
-    AddTaskScreen(),
+    AddTaskScreen(onNavIndexChanged: _onNavindexChanged),
     SettingsScreen(),
   ];
 
