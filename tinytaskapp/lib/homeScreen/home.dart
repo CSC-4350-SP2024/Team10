@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
@@ -173,31 +171,34 @@ class _TaskListState extends State<TaskList> {
           );
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Loading...');
+          return const Text('Loading...',
+              style: TextStyle(color: Colors.white));
         }
 
         final query = widget.searchText.toLowerCase();
+
         final filteredTasks = snapshot.data!.docs.where((task) {
           final taskName = task['name'] as String?;
           final taskDescription = task['desc'] as String?;
           final taskUser = task['userID'] as String?;
           final taskDueTimestamp = task['due'] as Timestamp?;
 
-          if (query.isEmpty) {
-            taskName != null &&
+          if (query.isNotEmpty) {
+            return taskName != null &&
                 taskDescription != null &&
                 taskUser == currentUserId &&
-                _isDue(taskDueTimestamp);
+                _isDue(taskDueTimestamp) &&
+                (taskName.toLowerCase().contains(query.toLowerCase()) ||
+                    taskDescription
+                        .toLowerCase()
+                        .contains(query.toLowerCase()));
           }
 
           return taskName != null &&
               taskDescription != null &&
-              (taskName.toLowerCase().contains(query) ||
-                  taskDescription.toLowerCase().contains(query)) &&
               taskUser == currentUserId &&
-              _isDue(
-                  taskDueTimestamp); // Only show tasks that belong to the current user.
-        }).toList(); // filteredTasks returns a filtered list of items based on userID and further filtered by the search text.
+              _isDue(taskDueTimestamp);
+        }).toList();
 
         filteredTasks.sort((a, b) {
           bool isUrgentA = a['isUrgent'] ?? false;
@@ -215,9 +216,7 @@ class _TaskListState extends State<TaskList> {
         return Container(
           width: MediaQuery.of(context).size.width * 0.9,
           child: ListView.builder(
-            itemCount: filteredTasks.length > maxTasks
-                ? maxTasks
-                : filteredTasks.length,
+            itemCount: filteredTasks.length,
             itemBuilder: (context, index) {
               final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";
