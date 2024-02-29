@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
@@ -8,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
-    "ray"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
+    "ray"; // Replace "ray" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -173,7 +171,8 @@ class _TaskListState extends State<TaskList> {
           );
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Loading...');
+          return const Text('Loading...',
+              style: TextStyle(color: Colors.white));
         }
 
         final query = widget.searchText.toLowerCase();
