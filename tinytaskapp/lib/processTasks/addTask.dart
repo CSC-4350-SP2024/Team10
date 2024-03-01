@@ -1,16 +1,12 @@
-import 'dart:isolate';
-
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tinytaskapp/nav.dart';
+//import 'package:tinytaskapp/nav.dart';
 
 String user = "ray";
 
 class AddTaskScreen extends StatefulWidget {
-  final Function(int) onNavIndexChanged;
-
-  AddTaskScreen({required this.onNavIndexChanged});
+  //AddTaskScreen({required this.onNavIndexChanged});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
@@ -334,7 +330,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: ElevatedButton(
             onPressed: () async {
               await addTask();
-              widget.onNavIndexChanged(0);
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(navBackgroundColor),
