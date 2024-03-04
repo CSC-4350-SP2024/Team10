@@ -8,7 +8,9 @@ import 'package:tinytaskapp/nav.dart';
 String user = "ray";
 
 class AddTaskScreen extends StatefulWidget {
-  AddTaskScreen({Key? key}) : super(key: key);
+  //final Function(int) onNavIndexChanged;
+
+  //AddTaskScreen({required this.onNavIndexChanged});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
