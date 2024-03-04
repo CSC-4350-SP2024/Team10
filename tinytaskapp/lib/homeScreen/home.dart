@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import '../settings/settings.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
@@ -50,6 +51,18 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),

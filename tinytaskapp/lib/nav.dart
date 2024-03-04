@@ -4,6 +4,7 @@ import 'processTasks/addTask.dart';
 import 'settings/settings.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '/processTasks/addTask.dart';
+import 'processTasks/viewTasks.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,8 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     HomeContentScreen(),
-    AddTaskScreen(onNavIndexChanged: _onNavindexChanged),
-    SettingsScreen(),
+    AddTaskScreen(),
+    ExtendedTaskList(),
   ];
 
   Color fontColor = Color.fromARGB(255, 255, 255,
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'All Tasks',
           ),
         ],
         currentIndex: _navIndex,
