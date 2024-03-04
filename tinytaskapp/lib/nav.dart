@@ -19,15 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _onNavIndexChanged(int newIndex) {
-    setState(() {
-      _navIndex = newIndex;
-    });
-  }
-
   final List<Widget> _screens = [
     HomeContentScreen(),
-    AddTaskScreen(onNavIndexChanged: _onNavindexChanged),
+    AddTaskScreen(),
     SettingsScreen(),
   ];
 
