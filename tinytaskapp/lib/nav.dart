@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     HomeContentScreen(),
     AddTaskScreen(),
-    ExtendedTaskList(),
+    ExtendedTaskListScreen(),
   ];
 
   Color fontColor = Color.fromARGB(255, 255, 255,
