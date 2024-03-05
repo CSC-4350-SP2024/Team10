@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import '/processTasks/editTask.dart';
 import '/settings/settings.dart';
 
@@ -55,7 +56,16 @@ class _ExtendedTaskListScreenState extends State<ExtendedTaskListScreen> {
           elevation: 0,
         ),
         body: Column(
+          //  crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Text(
+              "All Tasks",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextField(
@@ -75,9 +85,11 @@ class _ExtendedTaskListScreenState extends State<ExtendedTaskListScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            ExtendedTaskList(
-              searchText: searchText,
+            const SizedBox(height: 20),
+            Expanded(
+              child: ExtendedTaskList(
+                searchText: searchText,
+              ),
             ),
           ],
         ));
@@ -161,72 +173,90 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
           }
         });
 
-        return Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: ListView.builder(
-            itemCount: filteredTasks.length,
-            itemBuilder: (context, index) {
-              final currentTask = filteredTasks[index];
-              final taskTitle = currentTask['name'] ?? " ";
-              final isCompleted = currentTask['isComplete'] ?? false;
-              final isUrgent = currentTask['isUrgent'] ?? false;
+        return ListView.builder(
+          itemCount: filteredTasks.length,
+          itemBuilder: (context, index) {
+            final currentTask = filteredTasks[index];
+            final taskTitle = currentTask['name'] ?? " ";
+            final isCompleted = currentTask['isComplete'] ?? false;
+            final isUrgent = currentTask['isUrgent'] ?? false;
+            final dueTimeStamp = currentTask['due'] ?? " ";
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: isUrgent
-                      ? Color.fromARGB(255, 247, 192, 42)
-                      : navBackgroundColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Container(
-                  height: 70,
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                    title: Text(
-                      taskTitle,
-                      style: TextStyle(
-                        color: isUrgent ? Colors.black : Colors.white,
-                        fontSize: 20,
-                        fontWeight:
-                            isUrgent ? FontWeight.w400 : FontWeight.w300,
-                        decoration: isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                      ),
+            String dueDate = " ";
+
+            if (dueTimeStamp != null) {
+              final dueDateTime = (dueTimeStamp as Timestamp).toDate();
+              final dueDateFormatted =
+                  "${dueDateTime.month}/${dueDateTime.day}";
+              dueDate = dueDateFormatted;
+            }
+
+            if (currentTask.reference == null) {
+              return const SizedBox.shrink();
+            }
+
+            return Container(
+              //   margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: isUrgent
+                    ? Color.fromARGB(255, 247, 192, 42)
+                    : navBackgroundColor,
+                //  borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                height: 70,
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                  title: Text(
+                    taskTitle,
+                    style: TextStyle(
+                      color: isUrgent ? Colors.black : Colors.white,
+                      fontSize: 20,
+                      fontWeight: isUrgent ? FontWeight.w400 : FontWeight.w300,
+                      decoration: isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
                     ),
-                    leading: GestureDetector(
-                      onTap: () {
-                        currentTask.reference
-                            .update({'isComplete': true}).then((_) {
-                          // Task marked as completed, now delete it
-                          currentTask.reference.delete();
-                        }).catchError((error) {
-                          // Handle error while updating task
-                          print("Failed to mark task as completed: $error");
-                        });
-                      },
-                      child: isCompleted
-                          ? const Icon(Icons.check_circle_rounded,
-                              color: Colors.green)
-                          : const Icon(Icons.radio_button_unchecked_rounded,
-                              color: Colors.green),
-                    ),
-                    onLongPress: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditTaskScreen(
-                            currentTask: currentTask,
-                          ),
-                        ),
-                      );
-                    },
                   ),
+                  leading: GestureDetector(
+                    onTap: () {
+                      currentTask.reference
+                          .update({'isComplete': true}).then((_) {
+                        // Task marked as completed, now delete it
+                        currentTask.reference.delete();
+                      }).catchError((error) {
+                        // Handle error while updating task
+                        print("Failed to mark task as completed: $error");
+                      });
+                    },
+                    child: isCompleted
+                        ? const Icon(Icons.check_circle_rounded,
+                            color: Colors.green)
+                        : const Icon(Icons.radio_button_unchecked_rounded,
+                            color: Colors.green),
+                  ),
+                  trailing: Text(
+                    "Due: $dueDate",
+                    style: TextStyle(
+                      color: isUrgent ? Colors.black : Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  onLongPress: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => EditTaskScreen(
+                          currentTask: currentTask,
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );
