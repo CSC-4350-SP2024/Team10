@@ -1,16 +1,15 @@
-import 'dart:isolate';
+// TODO - automatically dismiss keyboard after inputs into addTask
 
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tinytaskapp/nav.dart';
+import '../nav.dart';
 
 String user = "ray";
 
 class AddTaskScreen extends StatefulWidget {
-  //final Function(int) onNavIndexChanged;
+  // final Function(int) onNavIndexChanged;
 
-  //AddTaskScreen({required this.onNavIndexChanged});
+  // AddTaskScreen({required this.onNavIndexChanged});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
@@ -61,7 +60,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         repeatWeekly = false;
         weeklyDaysSelection.cast();
       });
-      Navigator.pop(context);
+
+      // Redirect to HomeContentScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
     } catch (e) {
       print(e);
     }
