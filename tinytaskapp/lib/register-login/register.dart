@@ -101,7 +101,7 @@ class RegScreen extends StatelessWidget {
                 }
                 // Applying regex validation for password
                 if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$').hasMatch(value)) {
-                  return 'Your password must:\nContain eight characters\nContain at least one character\nContain one special character';
+                  return 'Your password must:\nContain eight characters\nContain at least one letter\nContain at least one number\nContain one special character';
                 }
                 return null;
               },
