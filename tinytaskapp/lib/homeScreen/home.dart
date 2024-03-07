@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
@@ -5,12 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '../settings/settings.dart';
 import 'package:confirm_dialog/confirm_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:confirm_dialog/confirm_dialog.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
-String currentUserId =
-    "ray"; // Replace "ray" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
+Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
+Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
 Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
 Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
 Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
@@ -23,6 +26,8 @@ class HomeContentScreen extends StatefulWidget {
 class _HomeContentScreenState extends State<HomeContentScreen> {
   late final TextEditingController searchController;
   String searchText = "";
+  int? userMaxTasks;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -33,11 +38,29 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
         searchText = searchController.text;
       });
     });
+    _findMaxTasks();
   }
 
   void dispose() {
     searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _findMaxTasks() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    String userCredentialID = currentUser!.uid;
+
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredentialID)
+        .get();
+
+    int userMaxTasks = userSnapshot['maxTasks'];
+
+    setState(() {
+      this.userMaxTasks = userMaxTasks;
+      isLoading = false;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -49,10 +72,13 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
               colors: [
             backgroundColorT,
             backgroundColorB,
+            backgroundColorT,
+            backgroundColorB,
           ])),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               icon: const Icon(Icons.settings, color: Colors.white),
@@ -68,81 +94,94 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: RichText(
-                text: TextSpan(children: <TextSpan>[
-                  TextSpan(
-                    text: "Today is ",
-                    style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: fontColor),
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: RichText(
+                        text: TextSpan(children: <TextSpan>[
+                          TextSpan(
+                            text: "Today is ",
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: fontColor),
+                          ),
+                          TextSpan(
+                            text:
+                                "${DateFormat('EEEE').format(DateTime.now())}",
+                            style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.greenAccent[400]!),
+                          ),
+                        ]),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        'To do',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: fontColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                        height: 20), // Add some space below the header
+                    /* Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: searchController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: const TextStyle(color: Colors.white),
+                    prefixIcon: const Icon(Icons.search, color: Colors.white),
+                    filled: true,
+                    isDense: true,
+                    fillColor: navBackgroundColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
-                  TextSpan(
-                    text: "${DateFormat('EEEE').format(DateTime.now())}",
-                    style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.greenAccent[400]!),
-                  ),
-                ]),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'To do',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: fontColor,
                 ),
               ),
-            ),
-            const SizedBox(height: 20), // Add some space below the header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  hintStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
-                  filled: true,
-                  isDense: true,
-                  fillColor: navBackgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
-                  ),
+              */
+                    const SizedBox(
+                        height: 20), // Add some space below the search bar
+                    Expanded(
+                      child: TaskList(maxTasks: userMaxTasks ?? maxTasks),
+                    ),
+                    const SizedBox(height: 20), // Add some space below the list
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20), // Add some space below the search bar
-            Expanded(
-              child: TaskList(searchText: searchText),
-            ),
-            const SizedBox(height: 20), // Add some space below the list
-          ],
-        ),
       ),
     );
   }
 }
 
 class TaskList extends StatefulWidget {
-  final String searchText;
+  final int maxTasks;
 
-  const TaskList({Key? key, required this.searchText}) : super(key: key);
+  const TaskList({super.key, required this.maxTasks});
 
   @override
   _TaskListState createState() => _TaskListState();
 }
 
 class _TaskListState extends State<TaskList> {
+  bool isCompleted = false;
+
   bool isCompleted = false;
 
   bool _isDue(Timestamp? currTaskDueTimestamp) {
@@ -191,8 +230,10 @@ class _TaskListState extends State<TaskList> {
           return const Text('Loading...',
               style: TextStyle(color: Colors.white));
         }
+        User? currentUser = FirebaseAuth.instance.currentUser;
+        String userCredentialID = currentUser!.uid;
 
-        final query = widget.searchText.toLowerCase();
+        // final query = widget.searchText.toLowerCase();
 
         final filteredTasks = snapshot.data!.docs.where((task) {
           final taskName = task['name'] as String?;
@@ -200,10 +241,10 @@ class _TaskListState extends State<TaskList> {
           final taskUser = task['userID'] as String?;
           final taskDueTimestamp = task['due'] as Timestamp?;
 
-          if (query.isNotEmpty) {
+          /* if (query.isNotEmpty) {
             return taskName != null &&
                 taskDescription != null &&
-                taskUser == currentUserId &&
+                taskUser == userCredentialID &&
                 _isDue(taskDueTimestamp) &&
                 (taskName.toLowerCase().contains(query.toLowerCase()) ||
                     taskDescription
@@ -211,12 +252,15 @@ class _TaskListState extends State<TaskList> {
                         .contains(query.toLowerCase()));
           }
 
+          */
+
           return taskName != null &&
               taskDescription != null &&
-              taskUser == currentUserId &&
+              taskUser == userCredentialID &&
               _isDue(taskDueTimestamp);
         }).toList();
 
+        // Sort tasks by urgency
         filteredTasks.sort((a, b) {
           bool isUrgentA = a['isUrgent'] ?? false;
           bool isUrgentB = b['isUrgent'] ?? false;
@@ -233,7 +277,7 @@ class _TaskListState extends State<TaskList> {
         return Container(
           width: MediaQuery.of(context).size.width * 0.9,
           child: ListView.builder(
-            itemCount: filteredTasks.length,
+            itemCount: widget.maxTasks,
             itemBuilder: (context, index) {
               final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";

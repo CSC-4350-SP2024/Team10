@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tinytaskapp/firebase_options.dart';
 import 'nav.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'userDirectory.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,7 @@ class TaskApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: const UserDirectoryScreen(),
     );
   }
 }
