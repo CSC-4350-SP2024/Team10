@@ -4,13 +4,15 @@ import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '../settings/settings.dart';
+import 'package:confirm_dialog/confirm_dialog.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
     "ray"; // Replace "ray" with the current user's ID (from Firebase Authentication)
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
-Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
+Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
+Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
 Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
 
 class HomeContentScreen extends StatefulWidget {
@@ -45,8 +47,8 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-            backgroundColor,
-            const Color.fromARGB(255, 31, 48, 66)
+            backgroundColorT,
+            backgroundColorB,
           ])),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -141,6 +143,8 @@ class TaskList extends StatefulWidget {
 }
 
 class _TaskListState extends State<TaskList> {
+  bool isCompleted = false;
+
   bool _isDue(Timestamp? currTaskDueTimestamp) {
     if (currTaskDueTimestamp == null) {
       return false;
@@ -263,14 +267,23 @@ class _TaskListState extends State<TaskList> {
                     ),
                     leading: GestureDetector(
                       onTap: () {
-                        currentTask.reference
-                            .update({'isComplete': true}).then((_) {
-                          // Task marked as completed, now delete it
-                          currentTask.reference.delete();
-                        }).catchError((error) {
-                          // Handle error while updating task
-                          print("Failed to mark task as completed: $error");
-                        });
+                        TextButton(
+                          child: const Text('Confirm Dialog'),
+                          onPressed: () async {
+                            if (await confirm(context)) {
+                              currentTask.reference
+                                  .update({'isComplete': true}).then((_) {
+                                // Task marked as completed, now delete it
+                                currentTask.reference.delete();
+                              }).catchError((error) {
+                                // Handle error while updating task
+                                print(
+                                    "Failed to mark task as completed: $error");
+                              });
+                            }
+                            return print('pressedCancel');
+                          },
+                        );
                       },
                       child: isCompleted
                           ? const Icon(Icons.check_circle_rounded,
