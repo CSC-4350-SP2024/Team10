@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Add Task',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.view_list_outlined),
             label: 'All Tasks',
           ),
         ],

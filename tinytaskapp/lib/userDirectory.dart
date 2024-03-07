@@ -68,7 +68,7 @@ class UserDirectoryScreen extends StatelessWidget {
                   InkWell(
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                      MaterialPageRoute(builder: (context) => RegScreen()),
                     ),
                     child: SizedBox(
                       width: 300,

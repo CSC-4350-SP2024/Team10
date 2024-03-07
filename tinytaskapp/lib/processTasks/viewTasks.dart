@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '/processTasks/editTask.dart';
 import '/settings/settings.dart';
-
-String currentUserId = "ray"; // Replace with the actual user ID
+import 'package:firebase_auth/firebase_auth.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
@@ -52,6 +51,7 @@ class _ExtendedTaskListScreenState extends State<ExtendedTaskListScreen> {
               },
             ),
           ],
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -138,6 +138,9 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
               style: TextStyle(color: Colors.white));
         }
 
+        User? currentUser = FirebaseAuth.instance.currentUser;
+        String userCredentialID = currentUser!.uid;
+
         final query = widget.searchText.toLowerCase();
 
         final filteredTasks = snapshot.data!.docs.where((task) {
@@ -148,7 +151,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
           if (query.isNotEmpty) {
             return taskName != null &&
                 taskDescription != null &&
-                taskUser == currentUserId &&
+                taskUser == userCredentialID &&
                 (taskName.toLowerCase().contains(query.toLowerCase()) ||
                     taskDescription
                         .toLowerCase()
@@ -157,7 +160,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
 
           return taskName != null &&
               taskDescription != null &&
-              taskUser == currentUserId;
+              taskUser == userCredentialID;
         }).toList();
 
         filteredTasks.sort((a, b) {

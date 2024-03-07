@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../nav.dart';
-
-String user = "ray";
+import '/settings/settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddTaskScreen extends StatefulWidget {
   // final Function(int) onNavIndexChanged;
@@ -30,6 +30,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   List<String> weeklyDaysSelection = [];
   DateTime? selectedDate;
 
+  final userCredentialID = FirebaseAuth.instance.currentUser?.uid;
+
   Future<void> addTask() async {
     String taskName = taskNameController.text;
     String taskDesc = taskDescriptionController.text;
@@ -45,7 +47,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       'isDaily': repeatDaily,
       'isWeekly': repeatWeekly,
       'weeklyDays': weeklyDaysSelection,
-      'userID': user,
+      'userID': userCredentialID,
     };
 
     try {
@@ -81,9 +83,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
+          foregroundColor: fontColor,
           backgroundColor: backgroundColor,
           elevation: 0,
-          title: Text('Add Task', style: TextStyle(color: fontColor)),
+          automaticallyImplyLeading: false,
+          // title: Text('Add Task', style: TextStyle(color: fontColor)),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),

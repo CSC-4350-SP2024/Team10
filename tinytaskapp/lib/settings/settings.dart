@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/settings/editSettings';
+import '../userDirectory.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255, 255);
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -21,6 +23,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final DateTime? birthday = DateTime(1990, 10, 15);
   final String? gender = 'Male';
 
+  void _signOut() async {
+    // Sign out of the user's account and redirect to directory screen.
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const UserDirectoryScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat('MM/dd/yyyy');
@@ -28,13 +44,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text('View Settings', style: TextStyle(color: fontColor)),
         backgroundColor:
-            settingsBackgroundColor, // Applying backgroundColor to the app bar
-        iconTheme:
-            IconThemeData(color: fontColor), // Change back button color here
+            backgroundColor, // Applying backgroundColor to the app bar
+        iconTheme: IconThemeData(color: fontColor),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_outlined, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const UserDirectoryScreen(),
+                ),
+              );
+            },
+          ),
+        ], // Change back button color here
       ),
       body: Container(
-        color:
-            settingsBackgroundColor, // Applying settingsBackgroundColor to the body
+        color: backgroundColor, // Applying settingsBackgroundColor to the body
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -43,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.account_circle, size: 80),
+                  Icon(Icons.account_circle, size: 80, color: fontColor),
                   SizedBox(height: 10),
                   Text(
                     username,
@@ -104,6 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: TextStyle(color: fontColor)),
               subtitle: DropdownButton<String>(
                 value: selectedOption,
+                dropdownColor: backgroundColor,
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedOption = newValue!;

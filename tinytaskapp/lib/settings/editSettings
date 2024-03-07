@@ -59,15 +59,11 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Edit Settings',
-          style: TextStyle(color: fontColor),
-        ),
         backgroundColor: backgroundColor,
         iconTheme: IconThemeData(color: fontColor),
       ),
       body: Container(
-        color: settingsBackgroundColor,
+        color: backgroundColor,
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Container(
@@ -80,7 +76,7 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.account_circle, size: 80),
+                    Icon(Icons.account_circle, size: 80, color: fontColor),
                     SizedBox(height: 10),
                     Text(
                       username,

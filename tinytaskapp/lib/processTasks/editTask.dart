@@ -58,7 +58,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       child: Scaffold(
         backgroundColor: backgroundColor,
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          foregroundColor: fontColor,
           backgroundColor: backgroundColor,
           elevation: 0,
           title: Text("Edit ${widget.currentTask['name']}",
