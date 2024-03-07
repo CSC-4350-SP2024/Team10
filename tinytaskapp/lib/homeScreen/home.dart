@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
@@ -7,13 +6,10 @@ import 'package:flutter/widgets.dart';
 import '../settings/settings.dart';
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:confirm_dialog/confirm_dialog.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
-Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
-Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
 Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
 Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
 Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
@@ -182,8 +178,6 @@ class TaskList extends StatefulWidget {
 class _TaskListState extends State<TaskList> {
   bool isCompleted = false;
 
-  bool isCompleted = false;
-
   bool _isDue(Timestamp? currTaskDueTimestamp) {
     if (currTaskDueTimestamp == null) {
       return false;
@@ -277,7 +271,9 @@ class _TaskListState extends State<TaskList> {
         return Container(
           width: MediaQuery.of(context).size.width * 0.9,
           child: ListView.builder(
-            itemCount: widget.maxTasks,
+            itemCount: widget.maxTasks < filteredTasks.length
+                ? widget.maxTasks
+                : filteredTasks.length,
             itemBuilder: (context, index) {
               final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";
@@ -310,24 +306,19 @@ class _TaskListState extends State<TaskList> {
                       ),
                     ),
                     leading: GestureDetector(
-                      onTap: () {
-                        TextButton(
-                          child: const Text('Confirm Dialog'),
-                          onPressed: () async {
-                            if (await confirm(context)) {
-                              currentTask.reference
-                                  .update({'isComplete': true}).then((_) {
-                                // Task marked as completed, now delete it
-                                currentTask.reference.delete();
-                              }).catchError((error) {
-                                // Handle error while updating task
-                                print(
-                                    "Failed to mark task as completed: $error");
-                              });
-                            }
-                            return print('pressedCancel');
-                          },
-                        );
+                      onTap: () async {
+                        if (await confirm(context,
+                            title: const Text("Confirmation"),
+                            content: const Text("Mark task as completed?"))) {
+                          currentTask.reference
+                              .update({'isComplete': true}).then((_) {
+                            // Task marked as completed, now delete it
+                            currentTask.reference.delete();
+                          }).catchError((error) {
+                            // Handle error while updating task
+                            print("Failed to mark task as completed: $error");
+                          });
+                        }
                       },
                       child: isCompleted
                           ? const Icon(Icons.check_circle_rounded,
