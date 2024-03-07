@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,11 +43,23 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyC3FY5qUh6aIM6ludpL3s9tZNFSBCxXcuk',
+    appId: '1:202382514585:web:04d89a80ad8149ae24db08',
+    messagingSenderId: '202382514585',
+    projectId: 'tinytask-99a5f',
+    authDomain: 'tinytask-99a5f.firebaseapp.com',
+    databaseURL: 'https://tinytask-99a5f-default-rtdb.firebaseio.com',
+    storageBucket: 'tinytask-99a5f.appspot.com',
+    measurementId: 'G-D81R208706',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDtcrqZDhKdFgPJCJzmhWIA-Ei9oBEHqQQ',
     appId: '1:202382514585:android:882ade15a361502f24db08',
     messagingSenderId: '202382514585',
     projectId: 'tinytask-99a5f',
+    databaseURL: 'https://tinytask-99a5f-default-rtdb.firebaseio.com',
     storageBucket: 'tinytask-99a5f.appspot.com',
   );
 
@@ -59,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:202382514585:ios:526aa9d5d471091f24db08',
     messagingSenderId: '202382514585',
     projectId: 'tinytask-99a5f',
+    databaseURL: 'https://tinytask-99a5f-default-rtdb.firebaseio.com',
     storageBucket: 'tinytask-99a5f.appspot.com',
     iosBundleId: 'com.example.tinytaskapp',
   );
@@ -68,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:202382514585:ios:94a7c6f6ee4d301124db08',
     messagingSenderId: '202382514585',
     projectId: 'tinytask-99a5f',
+    databaseURL: 'https://tinytask-99a5f-default-rtdb.firebaseio.com',
     storageBucket: 'tinytask-99a5f.appspot.com',
     iosBundleId: 'com.example.tinytaskapp.RunnerTests',
   );

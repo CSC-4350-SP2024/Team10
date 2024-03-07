@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 String currentUserId =
     "ray"; // Replace "Humayra" with the current user's ID (from Firebase Authentication)
-Color fontColor = Color.fromARGB(255, 255, 255,
+Color fontColor = const Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
-Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
-Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
+Color backgroundColor = const Color.fromARGB(255, 26, 33, 41);
+Color navBackgroundColor = const Color.fromARGB(255, 37, 55, 73);
 
 class HomeContentScreen extends StatefulWidget {
+  const HomeContentScreen({super.key});
+
   @override
   State<HomeContentScreen> createState() => _HomeContentScreenState();
 }
@@ -32,11 +33,13 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
     });
   }
 
+  @override
   void dispose() {
     searchController.dispose();
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -67,7 +70,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
                         color: fontColor),
                   ),
                   TextSpan(
-                    text: "${DateFormat('EEEE').format(DateTime.now())}",
+                    text: DateFormat('EEEE').format(DateTime.now()),
                     style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
@@ -121,7 +124,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
 class TaskList extends StatefulWidget {
   final String searchText;
 
-  const TaskList({Key? key, required this.searchText}) : super(key: key);
+  const TaskList({super.key, required this.searchText});
 
   @override
   _TaskListState createState() => _TaskListState();
@@ -213,7 +216,7 @@ class _TaskListState extends State<TaskList> {
           }
         });
 
-        return Container(
+        return SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: ListView.builder(
             itemCount: filteredTasks.length,
@@ -227,11 +230,11 @@ class _TaskListState extends State<TaskList> {
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
                   color: isUrgent
-                      ? Color.fromARGB(255, 247, 192, 42)
+                      ? const Color.fromARGB(255, 247, 192, 42)
                       : navBackgroundColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Container(
+                child: SizedBox(
                   height: 70,
                   child: ListTile(
                     contentPadding:

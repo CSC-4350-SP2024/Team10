@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class EditTaskScreen extends StatefulWidget {
   final QueryDocumentSnapshot currentTask;
 
-  EditTaskScreen({required this.currentTask});
+  const EditTaskScreen({super.key, required this.currentTask});
 
   @override
   _EditTaskScreenState createState() => _EditTaskScreenState();

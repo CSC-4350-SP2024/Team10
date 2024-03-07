@@ -1,24 +1,21 @@
-import 'dart:isolate';
 
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tinytaskapp/nav.dart';
 
 String user = "ray";
 
 class AddTaskScreen extends StatefulWidget {
-  final Function(int) onNavIndexChanged;
+  // final Function(int) onNavIndexChanged;
 
-  AddTaskScreen({required this.onNavIndexChanged});
+  // const AddTaskScreen({super.key, required this.onNavIndexChanged});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  Color fontColor = Color.fromARGB(255, 255, 255, 255);
-  Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
-  Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
+  Color fontColor = const Color.fromARGB(255, 255, 255, 255);
+  Color backgroundColor = const Color.fromARGB(255, 26, 33, 41);
+  Color navBackgroundColor = const Color.fromARGB(255, 37, 55, 73);
   Color accentColor = Colors.green;
 
   TextEditingController taskNameController = TextEditingController();
@@ -82,7 +79,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           title: Text('Add Task', style: TextStyle(color: fontColor)),
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -131,13 +128,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Text(
                 'Select Date',
                 style: TextStyle(
                     color: fontColor, fontSize: 16.0, fontFamily: 'Roboto'),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               GestureDetector(
                 onTap: () async {
                   final DateTime? pickedDate = await showDatePicker(
@@ -167,7 +164,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 },
                 child: AbsorbPointer(
                   child: Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 12.0), // Adjusted padding
                     decoration: BoxDecoration(
                       color: navBackgroundColor,
@@ -180,7 +177,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       decoration: InputDecoration(
                         border: InputBorder
                             .none, // Set the border to none to make it transparent
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors
                                   .transparent), // Set the border color to transparent
@@ -192,16 +189,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Row(
                 children: [
-                  SizedBox(width: 0.0),
+                  const SizedBox(width: 0.0),
                   Text('Urgent:',
                       style: TextStyle(
                           color: fontColor,
                           fontSize: 16.0,
                           fontFamily: 'Roboto')),
-                  SizedBox(width: 8.0), // Add space between text and toggle
+                  const SizedBox(width: 8.0), // Add space between text and toggle
                   Switch(
                     value: isUrgent,
                     onChanged: (value) {
@@ -221,13 +218,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               Row(
                 children: [
-                  SizedBox(width: 0.0),
+                  const SizedBox(width: 0.0),
                   Text('Recurring:',
                       style: TextStyle(
                           color: fontColor,
                           fontSize: 16.0,
                           fontFamily: 'Roboto')),
-                  SizedBox(width: 8.0), // Add space between text and toggle
+                  const SizedBox(width: 8.0), // Add space between text and toggle
                   Switch(
                     value: isRecurring,
                     onChanged: (value) {
@@ -246,7 +243,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ],
               ),
               if (isRecurring) ...[
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 CheckboxListTile(
                   title: Text('Repeat Daily',
                       style: TextStyle(
@@ -334,7 +331,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: ElevatedButton(
             onPressed: () async {
               await addTask();
-              widget.onNavIndexChanged(0);
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(navBackgroundColor),
