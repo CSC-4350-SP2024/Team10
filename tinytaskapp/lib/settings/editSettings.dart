@@ -70,6 +70,8 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
         color: settingsBackgroundColor,
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height -kToolbarHeight - MediaQuery.of(context).padding.top,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -142,7 +144,7 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
                 ),
               ),
             ],
-          ),
+          ),),
         ),
       ),
     );
