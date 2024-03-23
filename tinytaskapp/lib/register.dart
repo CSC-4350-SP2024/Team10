@@ -198,6 +198,7 @@ class RegScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: DropdownButtonFormField<String>(
+                  isExpanded: true,
                   value: selectedMaxTasks,
                   dropdownColor: backgroundColor, // Default value
                   decoration: const InputDecoration(

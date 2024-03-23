@@ -25,6 +25,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
   String searchText = "";
   int? userMaxTasks;
   bool isLoading = true;
+  late Future<void> _findMaxTasksFuture;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
         searchText = searchController.text;
       });
     });
-    _findMaxTasks();
+    _findMaxTasksFuture = _findMaxTasks();
   }
 
   void dispose() {
@@ -56,7 +57,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
 
     setState(() {
       this.userMaxTasks = userMaxTasks;
-      isLoading = false;
+      // isLoading = false;
     });
   }
 
@@ -89,49 +90,52 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: isLoading
-            ? const Center(
+        body: FutureBuilder(
+          future: _findMaxTasksFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
                 child: CircularProgressIndicator(),
-              )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: RichText(
-                        text: TextSpan(children: <TextSpan>[
-                          TextSpan(
-                            text: "Today is ",
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: fontColor),
-                          ),
-                          TextSpan(
-                            text:
-                                "${DateFormat('EEEE').format(DateTime.now())}",
-                            style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.greenAccent[400]!),
-                          ),
-                        ]),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'To do',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: fontColor,
+              );
+            }
+
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: RichText(
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                          text: "Today is ",
+                          style: TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: fontColor),
                         ),
+                        TextSpan(
+                          text: "${DateFormat('EEEE').format(DateTime.now())}",
+                          style: TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.greenAccent[400]!),
+                        ),
+                      ]),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      'To do',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: fontColor,
                       ),
                     ),
-                    const SizedBox(
-                        height: 20), // Add some space below the header
-                    /* Padding(
+                  ),
+                  const SizedBox(height: 20), // Add some space below the header
+                  /* Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextField(
                   controller: searchController,
@@ -151,15 +155,17 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
                 ),
               ),
               */
-                    const SizedBox(
-                        height: 20), // Add some space below the search bar
-                    Expanded(
-                      child: TaskList(maxTasks: userMaxTasks ?? maxTasks),
-                    ),
-                    const SizedBox(height: 20), // Add some space below the list
-                  ],
-                ),
+                  const SizedBox(
+                      height: 20), // Add some space below the search bar
+                  Expanded(
+                    child: TaskList(maxTasks: userMaxTasks ?? maxTasks),
+                  ),
+                  const SizedBox(height: 20), // Add some space below the list
+                ],
               ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -176,6 +182,7 @@ class TaskList extends StatefulWidget {
 
 class _TaskListState extends State<TaskList> {
   bool isCompleted = false;
+  bool showCompletedGif = false;
 
   bool _isDue(Timestamp? currTaskDueTimestamp) {
     if (currTaskDueTimestamp == null) {
@@ -201,6 +208,12 @@ class _TaskListState extends State<TaskList> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          showCompletedGif = true;
+        } else {
+          showCompletedGif = false;
+        }
+
+        if (showCompletedGif) {
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -219,6 +232,7 @@ class _TaskListState extends State<TaskList> {
             ),
           );
         }
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text('Loading...',
               style: TextStyle(color: Colors.white));
@@ -270,7 +284,9 @@ class _TaskListState extends State<TaskList> {
         return Container(
           width: MediaQuery.of(context).size.width * 0.9,
           child: ListView.builder(
-            itemCount: widget.maxTasks,
+            itemCount: widget.maxTasks < filteredTasks.length
+                ? widget.maxTasks
+                : filteredTasks.length,
             itemBuilder: (context, index) {
               final currentTask = filteredTasks[index];
               final taskTitle = currentTask['name'] ?? " ";
