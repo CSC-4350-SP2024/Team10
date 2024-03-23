@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinytaskapp/processTasks/editTask.dart';
@@ -68,6 +67,8 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
+            backgroundColorT,
+            backgroundColorB,
             backgroundColorT,
             backgroundColorB,
           ])),
@@ -319,15 +320,19 @@ class _TaskListState extends State<TaskList> {
                       ),
                     ),
                     leading: GestureDetector(
-                      onTap: () {
-                        currentTask.reference
-                            .update({'isComplete': true}).then((_) {
-                          // Task marked as completed, now delete it
-                          currentTask.reference.delete();
-                        }).catchError((error) {
-                          // Handle error while updating task
-                          print("Failed to mark task as completed: $error");
-                        });
+                      onTap: () async {
+                        if (await confirm(context,
+                            title: const Text("Confirmation"),
+                            content: const Text("Mark task as completed?"))) {
+                          currentTask.reference
+                              .update({'isComplete': true}).then((_) {
+                            // Task marked as completed, now delete it
+                            currentTask.reference.delete();
+                          }).catchError((error) {
+                            // Handle error while updating task
+                            print("Failed to mark task as completed: $error");
+                          });
+                        }
                       },
                       child: isCompleted
                           ? const Icon(Icons.check_circle_rounded,
