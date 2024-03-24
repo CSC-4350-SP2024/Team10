@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tinytaskapp/settings/editSettings';
+import './editSettings.dart';
 import '../userDirectory.dart';
+import '/themes/theme.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255, 255);
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
-Color settingsBackgroundColor = Color.fromARGB(255, 37, 55, 73);
+Color settingsBackgroundColor = Color.fromARGB(255, 26, 33, 41);
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -40,28 +41,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat('MM/dd/yyyy');
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('View Settings', style: TextStyle(color: fontColor)),
-        backgroundColor:
-            backgroundColor, // Applying backgroundColor to the app bar
-        iconTheme: IconThemeData(color: fontColor),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_outlined, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const UserDirectoryScreen(),
-                ),
-              );
-            },
-          ),
-        ], // Change back button color here
-      ),
-      body: Container(
-        color: backgroundColor, // Applying settingsBackgroundColor to the body
-        child: Column(
+    return Container(
+      decoration: gradientBackground(Theme.of(context)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: CustomAppBar(
+          title: 'View Settings',
+          isReturnable: true,
+          icon: const Icon(Icons.logout),
+          onReturn: _signOut,
+        ),
+        body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(

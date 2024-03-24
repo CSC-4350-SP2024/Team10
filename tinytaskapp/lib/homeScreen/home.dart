@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../settings/settings.dart';
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/themes/theme.dart';
 
 int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 Color fontColor = Color.fromARGB(255, 255, 255,
@@ -62,34 +63,14 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
 
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-            backgroundColorT,
-            backgroundColorB,
-            backgroundColorT,
-            backgroundColorB,
-          ])),
+      decoration: gradientBackground(Theme.of(context)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SettingsScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+        appBar: CustomAppBar(
+          title: '',
+          isReturnable: false,
+          icon: const Icon(Icons.settings),
+          navigateTo: SettingsScreen(),
         ),
         body: FutureBuilder(
           future: _findMaxTasksFuture,

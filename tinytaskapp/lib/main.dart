@@ -3,6 +3,7 @@ import 'package:tinytaskapp/firebase_options.dart';
 import 'nav.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'userDirectory.dart';
+import './themes/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,9 +31,7 @@ class TaskApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Task App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: AppThemes.darkTheme(),
       home: const UserDirectoryScreen(),
     );
   }

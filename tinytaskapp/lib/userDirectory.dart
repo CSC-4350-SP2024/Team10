@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'login.dart';
 import 'register.dart';
+import '/themes/theme.dart';
 
 Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
 Color backgroundColorB = Color.fromARGB(255, 31, 48, 66);
@@ -14,19 +15,14 @@ class UserDirectoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppThemes.lightTheme(),
       home: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-              backgroundColorT,
-              backgroundColorB,
-            ])),
+        decoration: gradientBackground(Theme.of(context)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
+          appBar: CustomAppBar(
+            title: '',
+            isReturnable: false,
           ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,

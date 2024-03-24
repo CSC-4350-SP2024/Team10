@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import '/processTasks/editTask.dart';
-import '/settings/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '/themes/theme.dart';
+import '/settings/settings.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
@@ -36,63 +37,55 @@ class _ExtendedTaskListScreenState extends State<ExtendedTaskListScreen> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SettingsScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-          automaticallyImplyLeading: false,
+    return Container(
+      decoration: gradientBackground(Theme.of(context)),
+      child: Scaffold(
           backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: Column(
-          //  crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "All Tasks",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TextField(
-                controller: searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  hintStyle: const TextStyle(color: Colors.white),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
-                  filled: true,
-                  isDense: true,
-                  fillColor: navBackgroundColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
+          appBar: CustomAppBar(
+            title: '',
+            isReturnable: false,
+            icon: const Icon(Icons.settings),
+            navigateTo: SettingsScreen(),
+          ),
+          body: Column(
+            //  crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                "All Tasks",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: searchController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: const TextStyle(color: Colors.white),
+                    prefixIcon: const Icon(Icons.search, color: Colors.white),
+                    filled: true,
+                    isDense: true,
+                    fillColor: navBackgroundColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ExtendedTaskList(
-                searchText: searchText,
+              const SizedBox(height: 20),
+              Expanded(
+                child: ExtendedTaskList(
+                  searchText: searchText,
+                ),
               ),
-            ),
-          ],
-        ));
+            ],
+          )),
+    );
   }
 }
 
@@ -114,25 +107,6 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
           return const Text('Uh oh! Something went wrong.');
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  'lib/assets/confetti.gif',
-                  width: 400,
-                  height: 400,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'You\'re all caught up!',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ],
-            ),
-          );
-        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text('Loading...',
               style: TextStyle(color: Colors.white));
