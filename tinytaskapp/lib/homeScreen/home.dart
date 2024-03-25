@@ -209,44 +209,31 @@ class _TaskListState extends State<TaskList> {
           final weeklyDaysList = task['weeklyDays'] as List<dynamic>? ?? [];
           final currentWeekdayString =
               DateFormat('EEEE').format(DateTime.now());
+          final today = DateTime.now();
+          final todayWithoutTime = DateTime(today.year, today.month, today.day);
 
           bool isIncludedInWeeklyDays(List<dynamic> weeklyDaysList) {
             return weeklyDaysList.contains(currentWeekdayString);
           }
 
-          final today = DateTime.now();
-          final todayWithoutTime = DateTime(today.year, today.month, today.day);
-          final dueDate = DateTime(
-            taskDueTimestamp!.toDate().year,
-            taskDueTimestamp.toDate().month,
-            taskDueTimestamp.toDate().day,
-          );
-
-          if (isCompleted && isTaskDaily) {
+          if (isCompleted &&
+              (isTaskDaily ||
+                  (isTaskWeekly && isIncludedInWeeklyDays(weeklyDaysList)))) {
             if (taskCompletedOn != null) {
               DateTime completedOn = DateTime.fromMillisecondsSinceEpoch(
                   taskCompletedOn.millisecondsSinceEpoch);
               completedOn = DateTime(completedOn.year, completedOn.month,
                   completedOn.day); // Removes time from date
 
-              if (todayWithoutTime.isAfter(completedOn)) {
+              if (todayWithoutTime.isAfter(completedOn) && isTaskDaily) {
                 task.reference.update({'isComplete': false}).catchError(
                   (error) {
                     // Handle error while updating task
                     print("Failed to mark task as incomplete: $error");
                   },
                 );
-              }
-            }
-          } else if (isCompleted && isTaskWeekly) {
-            if (taskCompletedOn != null) {
-              DateTime completedOn = DateTime.fromMillisecondsSinceEpoch(
-                  taskCompletedOn.millisecondsSinceEpoch);
-              completedOn = DateTime(completedOn.year, completedOn.month,
-                  completedOn.day); // Removes time from date
-
-              if (!(todayWithoutTime.isAtSameMomentAs(completedOn)) &&
-                  isIncludedInWeeklyDays(weeklyDaysList)) {
+              } else if (!(todayWithoutTime.isAtSameMomentAs(completedOn)) &&
+                  isTaskWeekly) {
                 task.reference.update({'isComplete': false}).catchError(
                   (error) {
                     // Handle error while updating task
@@ -257,20 +244,17 @@ class _TaskListState extends State<TaskList> {
             }
           }
 
-          // If the task is completed, it should not be displayed.
           if (isCompleted) {
             return false;
           }
 
           if (isRecurring) {
-            // If statement generates daily tasks and weekly tasks that are incomplete.
             return taskName != null &&
                 taskDescription != null &&
                 taskUser == userCredentialID &&
                 ((isTaskWeekly && isIncludedInWeeklyDays(weeklyDaysList)) ||
                     isTaskDaily);
           } else {
-            // This else statement generates tasks that are one-time and incomplete.
             return taskName != null &&
                 taskDescription != null &&
                 taskUser == userCredentialID &&
@@ -360,9 +344,37 @@ class _TaskListState extends State<TaskList> {
                     ),
                     leading: GestureDetector(
                       onTap: () async {
-                        if (await confirm(context,
-                            title: const Text("Confirmation"),
-                            content: const Text("Mark task as completed?"))) {
+                        if (await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Confirmation",
+                                  style: TextStyle(color: fontColor)),
+                              content: Text("Mark task as completed?",
+                                  style: TextStyle(color: fontColor)),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(
+                                        false); // Dismiss the dialog and return false
+                                  },
+                                  child: Text("No",
+                                      style: TextStyle(color: fontColor)),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Add your action here
+                                    Navigator.of(context).pop(
+                                        true); // Dismiss the dialog and return true
+                                  },
+                                  child: const Text("Yes",
+                                      style: TextStyle(color: Colors.green)),
+                                ),
+                              ],
+                              backgroundColor: backgroundColorT,
+                            );
+                          },
+                        )) {
                           if (!(isRecurring)) {
                             currentTask.reference.delete();
                           }

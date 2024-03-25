@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import '/processTasks/editTask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/themes/theme.dart';
@@ -158,6 +159,12 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
             final isCompleted = currentTask['isComplete'] ?? false;
             final isUrgent = currentTask['isUrgent'] ?? false;
             final dueTimeStamp = currentTask['due'] ?? " ";
+            final isRecurring = currentTask['isRecurring'] ?? false;
+            final isDaily = currentTask['isDaily'] ?? false;
+            final isWeekly = currentTask['isWeekly'] ?? false;
+            final weeklyDaysList =
+                (currentTask['weeklyDays'] as List<dynamic>).cast<String>() ??
+                    [];
 
             String dueDate = " ";
 
@@ -168,8 +175,27 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
               dueDate = dueDateFormatted;
             }
 
-            if (currentTask.reference == null) {
-              return const SizedBox.shrink();
+            String getNextClosestDay(List<String> weeklyDaysList) {
+              for (int i = 0; i < 7; i++) {
+                final nextDay = DateTime.now().add(Duration(days: i));
+                final nextDayString = DateFormat('EEEE').format(nextDay);
+
+                if (weeklyDaysList.contains(nextDayString)) {
+                  return nextDayString;
+                }
+              }
+
+              return weeklyDaysList.isNotEmpty ? weeklyDaysList[0] : " ";
+            }
+
+            String getDueDateText() {
+              if (isDaily) {
+                return "Today";
+              } else if (isWeekly) {
+                return getNextClosestDay(weeklyDaysList);
+              } else {
+                return "Due: $dueDate";
+              }
             }
 
             return Container(
@@ -188,7 +214,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                   title: Text(
                     taskTitle,
                     style: TextStyle(
-                      color: isUrgent ? Colors.black : Colors.white,
+                      color: (isUrgent ? Colors.black : Colors.white),
                       fontSize: 20,
                       fontWeight: isUrgent ? FontWeight.w400 : FontWeight.w300,
                       decoration: isCompleted
@@ -198,11 +224,15 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                   ),
                   leading: GestureDetector(
                     onTap: () {
-                      currentTask.reference
-                          .update({'isComplete': true}).then((_) {
-                        // Task marked as completed, now delete it
+                      if (!(isRecurring)) {
                         currentTask.reference.delete();
-                      }).catchError((error) {
+                      }
+                      currentTask.reference.update(
+                        {
+                          'isComplete': !isCompleted,
+                          'completedOn': Timestamp.now()
+                        },
+                      ).catchError((error) {
                         // Handle error while updating task
                         print("Failed to mark task as completed: $error");
                       });
@@ -214,9 +244,11 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                             color: Colors.green),
                   ),
                   trailing: Text(
-                    isCompleted ? 'Completed' : "Due: $dueDate",
+                    isCompleted ? 'Completed' : getDueDateText(),
                     style: TextStyle(
-                      color: isUrgent ? Colors.black : Colors.white,
+                      color: !isUrgent
+                          ? (isCompleted ? Colors.green : Colors.white)
+                          : Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
