@@ -230,9 +230,17 @@ class _TaskListState extends State<TaskList> {
           final taskUser = task['userID'] as String?;
           final taskDueTimestamp = task['due'] as Timestamp?;
           final isTaskDaily = task['isDaily'] as bool? ?? false;
+          final isTaskWeekly = task['isWeekly'] as bool? ?? false;
           final isRecurring = task['isRecurring'] as bool? ?? false;
           final isCompleted = task['isComplete'] as bool? ?? false;
           final taskCompletedOn = task['completedOn'] as Timestamp?;
+          final weeklyDaysList = task['weeklyDays'] as List<dynamic>? ?? [];
+          final currentWeekdayString =
+              DateFormat('EEEE').format(DateTime.now());
+
+          bool isIncludedInWeeklyDays(List<dynamic> weeklyDaysList) {
+            return weeklyDaysList.contains(currentWeekdayString);
+          }
 
           final today = DateTime.now();
           final todayWithoutTime = DateTime(today.year, today.month, today.day);
@@ -247,12 +255,7 @@ class _TaskListState extends State<TaskList> {
               DateTime completedOn = DateTime.fromMillisecondsSinceEpoch(
                   taskCompletedOn.millisecondsSinceEpoch);
               completedOn = DateTime(completedOn.year, completedOn.month,
-                  completedOn.day); // Truncate time part
-
-              // print('completedOn: $completedOn');
-              //    print('today: $todayWithoutTime');
-              //  print(
-              //     'It has been a day since the task has been completed? ${todayWithoutTime.isAfter(completedOn)}');
+                  completedOn.day); // Removes time from date
 
               if (todayWithoutTime.isAfter(completedOn)) {
                 task.reference.update({'isComplete': false}).catchError(
@@ -263,19 +266,39 @@ class _TaskListState extends State<TaskList> {
                 );
               }
             }
+          } else if (isCompleted && isTaskWeekly) {
+            if (taskCompletedOn != null) {
+              DateTime completedOn = DateTime.fromMillisecondsSinceEpoch(
+                  taskCompletedOn.millisecondsSinceEpoch);
+              completedOn = DateTime(completedOn.year, completedOn.month,
+                  completedOn.day); // Removes time from date
+
+              if (!(todayWithoutTime.isAtSameMomentAs(completedOn)) &&
+                  isIncludedInWeeklyDays(weeklyDaysList)) {
+                task.reference.update({'isComplete': false}).catchError(
+                  (error) {
+                    // Handle error while updating task
+                    print("Failed to mark task as incomplete: $error");
+                  },
+                );
+              }
+            }
           }
 
-          // Makes a list of tasks that are due dates fall on today and are assigned to the current user.
+          // If the task is completed, it should not be displayed.
           if (isCompleted) {
             return false;
           }
 
           if (isRecurring) {
+            // If statement generates daily tasks and weekly tasks that are incomplete.
             return taskName != null &&
                 taskDescription != null &&
                 taskUser == userCredentialID &&
-                (today.isAtSameMomentAs(dueDate) || isTaskDaily);
+                ((isTaskWeekly && isIncludedInWeeklyDays(weeklyDaysList)) ||
+                    isTaskDaily);
           } else {
+            // This else statement generates tasks that are one-time and incomplete.
             return taskName != null &&
                 taskDescription != null &&
                 taskUser == userCredentialID &&
@@ -308,9 +331,9 @@ class _TaskListState extends State<TaskList> {
               final taskTitle = currentTask['name'] ?? " ";
               final isCompleted = currentTask['isComplete'] ?? false;
               final isUrgent = currentTask['isUrgent'] ?? false;
-              final isDaily = currentTask['isDaily'] ?? false;
+              //final isDaily = currentTask['isDaily'] ?? false;
               final isRecurring = currentTask['isRecurring'] ?? false;
-              final completedOn = currentTask['completedOn'] as Timestamp?;
+              //final completedOn = currentTask['completedOn'] as Timestamp?;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),

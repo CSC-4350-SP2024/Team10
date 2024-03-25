@@ -214,7 +214,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                             color: Colors.green),
                   ),
                   trailing: Text(
-                    "Due: $dueDate",
+                    isCompleted ? 'Completed' : "Due: $dueDate",
                     style: TextStyle(
                       color: isUrgent ? Colors.black : Colors.white,
                       fontWeight: FontWeight.bold,
