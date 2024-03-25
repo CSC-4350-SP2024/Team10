@@ -43,6 +43,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       'desc': taskDesc,
       'due': taskDate,
       'isComplete': false,
+      'completedOn': null,
       'isRecurring': isRecurring,
       'isUrgent': isUrgent,
       'isDaily': repeatDaily,

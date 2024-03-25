@@ -229,27 +229,61 @@ class _TaskListState extends State<TaskList> {
           final taskDescription = task['desc'] as String?;
           final taskUser = task['userID'] as String?;
           final taskDueTimestamp = task['due'] as Timestamp?;
+          final isTaskDaily = task['isDaily'] as bool? ?? false;
+          final isRecurring = task['isRecurring'] as bool? ?? false;
+          final isCompleted = task['isComplete'] as bool? ?? false;
+          final taskCompletedOn = task['completedOn'] as Timestamp?;
 
-          /* if (query.isNotEmpty) {
+          final today = DateTime.now();
+          final todayWithoutTime = DateTime(today.year, today.month, today.day);
+          final dueDate = DateTime(
+            taskDueTimestamp!.toDate().year,
+            taskDueTimestamp.toDate().month,
+            taskDueTimestamp.toDate().day,
+          );
+
+          if (isCompleted && isTaskDaily) {
+            if (taskCompletedOn != null) {
+              DateTime completedOn = DateTime.fromMillisecondsSinceEpoch(
+                  taskCompletedOn.millisecondsSinceEpoch);
+              completedOn = DateTime(completedOn.year, completedOn.month,
+                  completedOn.day); // Truncate time part
+
+              // print('completedOn: $completedOn');
+              //    print('today: $todayWithoutTime');
+              //  print(
+              //     'It has been a day since the task has been completed? ${todayWithoutTime.isAfter(completedOn)}');
+
+              if (todayWithoutTime.isAfter(completedOn)) {
+                task.reference.update({'isComplete': false}).catchError(
+                  (error) {
+                    // Handle error while updating task
+                    print("Failed to mark task as incomplete: $error");
+                  },
+                );
+              }
+            }
+          }
+
+          // Makes a list of tasks that are due dates fall on today and are assigned to the current user.
+          if (isCompleted) {
+            return false;
+          }
+
+          if (isRecurring) {
             return taskName != null &&
                 taskDescription != null &&
                 taskUser == userCredentialID &&
-                _isDue(taskDueTimestamp) &&
-                (taskName.toLowerCase().contains(query.toLowerCase()) ||
-                    taskDescription
-                        .toLowerCase()
-                        .contains(query.toLowerCase()));
+                (today.isAtSameMomentAs(dueDate) || isTaskDaily);
+          } else {
+            return taskName != null &&
+                taskDescription != null &&
+                taskUser == userCredentialID &&
+                _isDue(taskDueTimestamp);
           }
-
-          */
-
-          return taskName != null &&
-              taskDescription != null &&
-              taskUser == userCredentialID &&
-              _isDue(taskDueTimestamp);
         }).toList();
 
-        // Sort tasks by urgency
+        // Sort tasks by urgency. Urgent tasks always shown first.
         filteredTasks.sort((a, b) {
           bool isUrgentA = a['isUrgent'] ?? false;
           bool isUrgentB = b['isUrgent'] ?? false;
@@ -274,6 +308,9 @@ class _TaskListState extends State<TaskList> {
               final taskTitle = currentTask['name'] ?? " ";
               final isCompleted = currentTask['isComplete'] ?? false;
               final isUrgent = currentTask['isUrgent'] ?? false;
+              final isDaily = currentTask['isDaily'] ?? false;
+              final isRecurring = currentTask['isRecurring'] ?? false;
+              final completedOn = currentTask['completedOn'] as Timestamp?;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
@@ -294,7 +331,7 @@ class _TaskListState extends State<TaskList> {
                         color: isUrgent ? Colors.black : Colors.white,
                         fontSize: 20,
                         fontWeight:
-                            isUrgent ? FontWeight.w400 : FontWeight.w300,
+                            isUrgent ? FontWeight.w400 : FontWeight.w400,
                         decoration: isCompleted
                             ? TextDecoration.lineThrough
                             : TextDecoration.none,
@@ -305,11 +342,15 @@ class _TaskListState extends State<TaskList> {
                         if (await confirm(context,
                             title: const Text("Confirmation"),
                             content: const Text("Mark task as completed?"))) {
-                          currentTask.reference
-                              .update({'isComplete': true}).then((_) {
-                            // Task marked as completed, now delete it
+                          if (!(isRecurring)) {
                             currentTask.reference.delete();
-                          }).catchError((error) {
+                          }
+                          currentTask.reference.update(
+                            {
+                              'isComplete': true,
+                              'completedOn': Timestamp.now()
+                            },
+                          ).catchError((error) {
                             // Handle error while updating task
                             print("Failed to mark task as completed: $error");
                           });
