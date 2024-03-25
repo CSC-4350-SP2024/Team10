@@ -189,40 +189,12 @@ class _TaskListState extends State<TaskList> {
           return const Text('Uh oh! Something went wrong.');
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          showCompletedGif = true;
-        } else {
-          showCompletedGif = false;
-        }
-
-        if (showCompletedGif) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  'lib/assets/confetti.gif',
-                  width: 400,
-                  height: 400,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'You\'re all caught up!',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ],
-            ),
-          );
-        }
-
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text('Loading...',
               style: TextStyle(color: Colors.white));
         }
         User? currentUser = FirebaseAuth.instance.currentUser;
         String userCredentialID = currentUser!.uid;
-
-        // final query = widget.searchText.toLowerCase();
 
         final filteredTasks = snapshot.data!.docs.where((task) {
           final taskName = task['name'] as String?;
@@ -305,6 +277,32 @@ class _TaskListState extends State<TaskList> {
                 _isDue(taskDueTimestamp);
           }
         }).toList();
+
+        if (filteredTasks.isEmpty) {
+          showCompletedGif = true;
+        } else {
+          showCompletedGif = false;
+        }
+
+        if (showCompletedGif) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Image.asset(
+                  'lib/assets/confetti.gif',
+                  width: 400,
+                  height: 400,
+                  fit: BoxFit.cover,
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'You\'re all caught up!',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          );
+        }
 
         // Sort tasks by urgency. Urgent tasks always shown first.
         filteredTasks.sort((a, b) {
