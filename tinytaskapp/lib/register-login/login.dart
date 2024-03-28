@@ -23,6 +23,8 @@ class LoginScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset('assets/tinytasklogo-cropped.png'), // Adding the logo
+            const SizedBox(height: 16.0),
             TextFormField(
               decoration: InputDecoration(
                 icon: Icon(Icons.mail, color: fontColor), // Adding fontColor to the icon color
