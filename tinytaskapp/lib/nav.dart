@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'homeScreen/home.dart';
 import 'processTasks/addTask.dart';
 import 'settings/settings.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '/processTasks/addTask.dart';
+import 'processTasks/viewTasks.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -19,22 +20,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _onNavIndexChanged(int newIndex) {
-    setState(() {
-      _navIndex = newIndex;
-    });
-  }
-
   final List<Widget> _screens = [
-    const HomeContentScreen(),
+    HomeContentScreen(),
     AddTaskScreen(),
-    const SettingsScreen(),
+    ExtendedTaskListScreen(),
   ];
 
-  Color fontColor = const Color.fromARGB(255, 255, 255,
+  Color fontColor = Color.fromARGB(255, 255, 255,
       255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
-  Color backgroundColor = const Color.fromARGB(255, 26, 33, 41);
-  Color navBackgroundColor = const Color.fromARGB(255, 37, 55, 73);
+  Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
+  Color navBackgroundColor = Color.fromARGB(255, 37, 55, 73);
 
   @override
   Widget build(BuildContext context) {
@@ -52,15 +47,15 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Add Task',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.view_list_outlined),
+            label: 'All Tasks',
           ),
         ],
         currentIndex: _navIndex,
         selectedItemColor: Colors.white,
-        unselectedItemColor: const Color.fromARGB(255, 204, 204, 204),
+        unselectedItemColor: Color.fromARGB(255, 204, 204, 204),
         unselectedIconTheme:
-            const IconThemeData(color: Color.fromARGB(255, 131, 131, 131)),
+            IconThemeData(color: Color.fromARGB(255, 131, 131, 131)),
         onTap: _onNavTapped,
       ),
     );
