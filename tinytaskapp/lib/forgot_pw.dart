@@ -22,51 +22,89 @@ class _ForgotPwState extends State<ForgotPw> {
   }
 
 
+  // Future<void> passwordReset() async {
+  //   try {
+  //     // Check if the user exists
+  //     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: _emailController.text.trim(),
+  //       password: 'password', // Provide a dummy password as signInWithEmailAndPassword requires a non-empty password
+  //     );
+
+  //     // If the user exists, send the password reset email
+  //     await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+
+  //     // displays this message if the user was found and the email was sent
+  //     showDialog(
+  //       context: context, 
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           content: Text('We sent you an email with a link to reset your password. Please check your email. If you do not receive an email, check your spam folder or try again.'),
+  //         );
+  //       }
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     // displays this message is the email wasnt found in our database
+  //     print(e.toString());
+  //     if (e.code == 'user-not-found') {
+  //       showDialog(
+  //         context: context, 
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             content: Text('The provided email is not registered. Please check your email address and try again.'),
+  //           );
+  //         }
+  //       );
+  //     } else {
+  //       // general error message
+  //       showDialog(
+  //         context: context, 
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             content: Text('An error occurred. Please check your email address and try again.'),
+  //           );
+  //         }
+  //       );
+  //     }
+  //   }
+  // }
+
+
   Future<void> passwordReset() async {
-    try {
-      // Check if the user exists
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: 'password', // Provide a dummy password as signInWithEmailAndPassword requires a non-empty password
-      );
+  try {
+    // Send the password reset email
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
 
-      // If the user exists, send the password reset email
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
-
-      // displays this message if the user was found and the email was sent
+    showDialog(
+      context: context, 
+      builder: (context) {
+        return AlertDialog(
+          content: Text('We sent you an email with a link to reset your password. Please check your email. If you do not receive an email, check your spam folder or try again.'),
+        );
+      }
+    );
+  } on FirebaseAuthException catch (e) {
+    print(e.toString());
+    if (e.code == 'user-not-found') {
       showDialog(
         context: context, 
         builder: (context) {
           return AlertDialog(
-            content: Text('We sent you an email with a link to reset your password. Please check your email. If you do not receive an email, check your spam folder or try again.'),
+            content: Text('The provided email is not registered. Please check your email address and try again.'),
           );
         }
       );
-    } on FirebaseAuthException catch (e) {
-      // displays this message is the email wasnt found in our database
-      print(e.toString());
-      if (e.code == 'user-not-found') {
-        showDialog(
-          context: context, 
-          builder: (context) {
-            return AlertDialog(
-              content: Text('The provided email is not registered. Please check your email address and try again.'),
-            );
-          }
-        );
-      } else {
-        // general error message
-        showDialog(
-          context: context, 
-          builder: (context) {
-            return AlertDialog(
-              content: Text('An error occurred. Please check your email address and try again.'),
-            );
-          }
-        );
-      }
+    } else {
+      showDialog(
+        context: context, 
+        builder: (context) {
+          return AlertDialog(
+            content: Text('An error occurred. Please try again.'),
+          );
+        }
+      );
     }
   }
+}
 
   @override
     Widget build(BuildContext context) {
