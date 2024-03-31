@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:tinytaskapp/processTasks/addTask.dart';
 import 'nav.dart';
 import 'register.dart';
+import 'forgot_pw.dart';
 import '/themes/theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -50,77 +51,108 @@ class _LoginScreenState extends State<LoginScreen> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.account_circle,
-                    size: 150,
-                    color: Colors.white,
+                  Image.asset(
+                    'lib/assets/tinytasklogo.png', // Path to your image asset
+                    width: 300, // Set the width as needed
+                    height: 117, // Set the height as needed
                   ),
-                  SizedBox(height: 20.0),
-                  Text("Login",
+                  const SizedBox(height: 60.0),
+                  const Text("Login",
                       style: TextStyle(fontSize: 45, color: Colors.white)),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   TextField(
                     onChanged: (value) {
                       setState(() {
                         email = value;
                       });
                     },
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hoverColor: Colors.green,
                       hintText: 'Email/Username',
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: const TextStyle(color: Colors.white),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.white),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   TextField(
                     onChanged: (value) {
                       setState(() {
                         password = value;
                       });
                     },
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: const TextStyle(color: Colors.white),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.white),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      _signInWithEmailAndPassword();
+
+
+                  // Forgot password link
+                  const SizedBox(height: 10.0), // Add some spacing between the text and the button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPw()),
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.green, // Set button's background color here
-                    ),
-                    child: Text(
-                      'Log In',
-                      style: TextStyle(color: Colors.white),
+                    child: const Text(
+                      'Forgot your password?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        //decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10.0),
+                  
+
+                  // Log in button
+                  const SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signInWithEmailAndPassword();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green, // Set button's background color here
+                            padding: const EdgeInsets.all(25),
+                          ),
+                          child: const Text(
+                            'Log In',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+                  // Don't have an account button
+                  const SizedBox(height: 50.0),
                   GestureDetector(
                     onTap: () {
                       // Navigate to the sign-in page
@@ -129,15 +161,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => RegScreen()),
                       );
                     },
-                    child: const Text(
-                      "Don't have an account? Sign up now.",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontFamily: 'Roboto',
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontFamily: 'Roboto',
+                        ),
+                        children: [
+                            TextSpan(
+                            text: "Don't have an account? ",
+                          ),
+                            TextSpan(
+                            text: "Sign up now.",
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold, 
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+
+
+
                 ],
               ),
             ),
