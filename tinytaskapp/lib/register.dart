@@ -18,13 +18,13 @@ class RegScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController _passwordController = TextEditingController();
-    final TextEditingController _confirmPasswordController =
-        TextEditingController();
+    final TextEditingController _confirmPasswordController = TextEditingController();
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _firstNameController = TextEditingController();
     final TextEditingController _lastNameController = TextEditingController();
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final String hintText;
 
     String selectedMaxTasks = 'Normal (5 Tasks)';
 
@@ -71,14 +71,14 @@ class RegScreen extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Sign up Failed'),
-                content: Text('An error occurred. Please try again.'),
+                title: const Text('Sign up Failed'),
+                content: const Text('An error occurred. Please try again.'),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -102,8 +102,12 @@ class RegScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.account_circle, size: 100, color: Colors.white),
-                const SizedBox(height: 20.0),
+                Image.asset(
+                    'lib/assets/tinytasklogo.png', // Path to your image asset
+                    width: 300, // Set the width as needed
+                    height: 117, // Set the height as needed
+                  ),
+                const SizedBox(height: 60.0),
                 const Text(
                   'Sign Up',
                   textAlign: TextAlign.center,
@@ -115,16 +119,16 @@ class RegScreen extends StatelessWidget {
                   cursorColor: Colors.green,
                   style: TextStyle(color: fontColor),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.person),
+                    icon: const Icon(Icons.person),
                     labelText: 'First Name *',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
                   validator: (value) {
@@ -134,22 +138,22 @@ class RegScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _lastNameController,
                   cursorColor: Colors.green,
                   style: TextStyle(color: fontColor),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.person),
+                    icon: const Icon(Icons.person),
                     labelText: 'Last Name *',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
                   validator: (value) {
@@ -159,22 +163,22 @@ class RegScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _emailController,
                   cursorColor: Colors.green,
                   style: TextStyle(color: fontColor),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.mail),
+                    icon: const Icon(Icons.mail),
                     labelText: 'Email *',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
                   validator: (String? value) {
@@ -189,61 +193,73 @@ class RegScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
-                Text(
-                  'Max Tasks Shown?',
-                  style: TextStyle(color: fontColor),
-                ),
-                Container(
-                  width: double.infinity * .9,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    value: selectedMaxTasks,
-                    dropdownColor: backgroundColor, // Default value
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                      enabledBorder:
-                          UnderlineInputBorder(borderSide: BorderSide.none),
-                      focusedBorder:
-                          UnderlineInputBorder(borderSide: BorderSide.none),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Low (3 Tasks)',
-                      'Normal (5 Tasks)',
-                      'Overachiever (8 Tasks)'
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value, style: TextStyle(color: fontColor)),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      selectedMaxTasks = newValue!;
-                    },
+                const SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 40.0), // Shift to the right by 30px
+                  child: Text(
+                    'Max Tasks Shown?',
+                    style: TextStyle(color: fontColor),
                   ),
                 ),
-                SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, ), 
+                  child: Row(
+                    children: [
+                      Icon(Icons.add_box, color: fontColor), // Add the add_box icon
+                      const SizedBox(width:12), // Add some space between the icon and the dropdown button
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            value: selectedMaxTasks,
+                            dropdownColor: backgroundColor, // Default value
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                              border: OutlineInputBorder(),
+                            ),
+                            items: <String>[
+                              'Low (3 Tasks)',
+                              'Normal (5 Tasks)',
+                              'Overachiever (8 Tasks)'
+                            ].map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value, style: TextStyle(color: fontColor)),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              selectedMaxTasks = newValue!;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   cursorColor: Colors.green,
                   style: TextStyle(color: fontColor),
                   controller: _passwordController,
                   obscureText: true,
+                  // hintText: 'Must be 8 characters, 1 letter and 1 special character',
                   decoration: InputDecoration(
-                    icon: Icon(Icons.lock_person_rounded),
+                    icon: const Icon(Icons.lock_person_rounded),
                     labelText: 'Password *',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
                   validator: (String? value) {
@@ -254,27 +270,27 @@ class RegScreen extends StatelessWidget {
                     if (!RegExp(
                             r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$')
                         .hasMatch(value)) {
-                      return 'Your password must:\nContain eight characters\nContain at least one character\nContain one special character';
+                      return 'Your password must:\nContain eight characters\nContain at least one letter\nContain one special character';
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _confirmPasswordController,
                   cursorColor: Colors.green,
                   style: TextStyle(color: fontColor),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.lock_person_rounded),
+                    icon: const Icon(Icons.lock_person_rounded),
                     labelText: 'Confirm Password *',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.white),
+                      borderSide: const BorderSide(color: Colors.white),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(color: Colors.green),
+                      borderSide: const BorderSide(color: Colors.green),
                     ),
                   ),
                   obscureText: true,
@@ -288,36 +304,81 @@ class RegScreen extends StatelessWidget {
                     return null;
                   },
                 ),
+
+
+                // Sign up button
                 const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    _signUp();
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.green),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     _signUp();
+                //   },
+                //   style: ButtonStyle(
+                //     backgroundColor: MaterialStateProperty.all(Colors.green),                    
+                //   ),
+                //   child: const Text(
+                //     'Sign Up',
+                //     style: TextStyle(
+                //       color: Color.fromARGB(255, 255, 255, 255),
+                //       fontFamily: 'Roboto',
+                //     ),
+                //   ),
+                // ),
+
+
+                Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signUp();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green, // Set button's background color here
+                            padding: const EdgeInsets.all(25),
+                          ),
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontFamily: 'Roboto',
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                GestureDetector(
-                  onTap: () {
-                    // Navigate to the sign-in page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
-                  },
-                  child: const Text(
-                    "Already have an account? Sign in now.",
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      fontFamily: 'Roboto',
+
+                // Sign in link
+                const SizedBox(height: 50.0),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to the sign-in page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
+                    },
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontFamily: 'Roboto',
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Already have an account? ",
+                          ),
+                          TextSpan(
+                            text: "Sign in now.",
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold, 
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
