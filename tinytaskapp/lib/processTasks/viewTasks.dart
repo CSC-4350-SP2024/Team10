@@ -163,8 +163,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
             final isDaily = currentTask['isDaily'] ?? false;
             final isWeekly = currentTask['isWeekly'] ?? false;
             final weeklyDaysList =
-                (currentTask['weeklyDays'] as List<dynamic>).cast<String>() ??
-                    [];
+                (currentTask['weeklyDays'] as List<dynamic>).cast<String>();
 
             String dueDate = " ";
 
@@ -198,6 +197,16 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
               }
             }
 
+            bool isLate() {
+              if (dueTimeStamp != null) {
+                final dueDateTime = (dueTimeStamp as Timestamp).toDate();
+                final now = DateTime.now();
+                return now.isAfter(dueDateTime);
+              }
+              return false;
+            }
+
+            final late = isLate();
             return Container(
               //   margin: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
@@ -246,9 +255,11 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                   trailing: Text(
                     isCompleted ? 'Completed' : getDueDateText(),
                     style: TextStyle(
-                      color: !isUrgent
-                          ? (isCompleted ? Colors.green : Colors.white)
-                          : Colors.black,
+                      color: late
+                          ? Colors.red // Set color to red when the task is late
+                          : (!isUrgent
+                              ? (isCompleted ? Colors.green : Colors.white)
+                              : Colors.black),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
