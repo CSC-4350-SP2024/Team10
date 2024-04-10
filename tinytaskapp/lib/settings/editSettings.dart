@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '/themes/theme.dart';
+import 'settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255, 255);
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -17,23 +20,44 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
-  DateTime? _selectedDate;
 
-  String username = "BM";
-  String firstName = "Brayan";
-  String lastName = "Maldonado";
-  DateTime? birthday = DateTime(1990, 10, 15);
-  String? gender = 'Male';
+  late DateTime? _selectedDate;
+  late String username;
+  late String firstName;
+  late String lastName;
+  late DateTime? birthday;
+  late String? gender;
+  late bool isDarkModeEnabled;
+  late int maxTasks;
 
-  bool isDarkModeEnabled = false;
+  void _getUserProfile() async {
+    // Get the current user's profile information
+    final User? user = FirebaseAuth.instance.currentUser;
+    final DocumentSnapshot<Map<String, dynamic>> userProfile =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .get();
+    final Map<String, dynamic> data = userProfile.data()!;
+    setState(() {
+      isDarkModeEnabled = data['hasDarkTheme'] ?? true;
+      maxTasks = data['maxTasks'] ?? 5;
+      firstName = data['firstName'] ?? " ";
+      lastName = data['lastName'] ?? " ";
+      username = data['firstName'][0] + data['lastName'][0] ?? " ";
+      gender = data['gender'] ?? " ";
+      birthday = data['birthday'] != ''
+          ? (data['birthday'] as Timestamp).toDate()
+          : null;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    // Prefill the first name and last name
+    _getUserProfile();
     _firstNameController.text = firstName;
     _lastNameController.text = lastName;
-    // Prefill the birthday
     _selectedDate = birthday;
   }
 

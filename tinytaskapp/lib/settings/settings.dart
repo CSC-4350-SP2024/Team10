@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import './editSettings.dart';
 import '../userDirectory.dart';
 import '/themes/theme.dart';
+import 'package:confirm_dialog/confirm_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Color fontColor = Color.fromARGB(255, 255, 255, 255);
 Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
@@ -15,14 +18,44 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkModeEnabled = false;
-  String selectedOption = 'Normal (5 Tasks)';
+  late bool isDarkModeEnabled = true;
+  late int maxTasks;
+  late String username;
+  late String firstName;
+  late String lastName;
+  late DateTime? birthday;
+  late String? gender;
+  late String selectedOption;
 
-  final String username = "BM";
-  final String firstName = "Brayan";
-  final String lastName = "Maldonado";
-  final DateTime? birthday = DateTime(1990, 10, 15);
-  final String? gender = 'Male';
+  void _getUserProfile() async {
+    // Get the current user's profile information
+    final User? user = FirebaseAuth.instance.currentUser;
+    final DocumentSnapshot<Map<String, dynamic>> userProfile =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .get();
+    final Map<String, dynamic> data = userProfile.data()!;
+    setState(() {
+      isDarkModeEnabled = data['hasDarkTheme'] ?? true;
+      maxTasks = data['maxTasks'] ?? 5;
+      firstName = data['firstName'] ?? " ";
+      lastName = data['lastName'] ?? " ";
+      username = data['firstName'][0] + data['lastName'][0] ?? " ";
+      gender = data['gender'] ?? " ";
+      birthday = data['birthday'] != ''
+          ? (data['birthday'] as Timestamp).toDate()
+          : null;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getUserProfile();
+    selectedOption = getSelectedOption(maxTasks);
+  }
 
   void _signOut() async {
     // Sign out of the user's account and redirect to directory screen.
@@ -38,8 +71,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  String getSelectedOption(int maxTasks) {
+    if (maxTasks == 3) {
+      return 'Low (3 Tasks)';
+    } else if (maxTasks == 5) {
+      return 'Normal (5 Tasks)';
+    } else {
+      return 'Overachiever (8 Tasks)';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _getUserProfile();
     final DateFormat dateFormat = DateFormat('MM/dd/yyyy');
     return Container(
       decoration: gradientBackground(Theme.of(context)),
@@ -111,7 +155,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: Switch(
                 value: isDarkModeEnabled,
                 onChanged: (value) {
-                  null;
+                  setState(() {
+                    isDarkModeEnabled = value;
+                  });
                 },
               ),
             ),

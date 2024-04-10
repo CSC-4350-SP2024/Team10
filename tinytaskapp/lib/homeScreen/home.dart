@@ -8,7 +8,7 @@ import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/themes/theme.dart';
 
-int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
+// int maxTasks = 4; // Maximum number of tasks that can be displayed at once.
 Color fontColor = Color.fromARGB(255, 255, 255,
     255); // Styles for the app are stored in variables. Could be used for app preferences. Will replace with theme later.
 Color backgroundColorT = Color.fromARGB(255, 26, 33, 41);
@@ -140,7 +140,7 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
                   const SizedBox(
                       height: 20), // Add some space below the search bar
                   Expanded(
-                    child: TaskList(maxTasks: userMaxTasks ?? maxTasks),
+                    child: TaskList(maxTasks: userMaxTasks ?? 4),
                   ),
                   const SizedBox(height: 20), // Add some space below the list
                 ],
