@@ -332,6 +332,7 @@ class _TaskListState extends State<TaskList> {
                         const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
                     title: Text(
                       taskTitle,
+                      maxLines: 1,
                       style: TextStyle(
                         color: isUrgent ? Colors.black : Colors.white,
                         fontSize: 20,

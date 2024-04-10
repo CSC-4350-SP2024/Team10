@@ -222,6 +222,7 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                       const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
                   title: Text(
                     taskTitle,
+                    maxLines: 1,
                     style: TextStyle(
                       color: (isUrgent ? Colors.black : Colors.white),
                       fontSize: 20,
@@ -255,11 +256,9 @@ class _ExtendedTaskListState extends State<ExtendedTaskList> {
                   trailing: Text(
                     isCompleted ? 'Completed' : getDueDateText(),
                     style: TextStyle(
-                      color: late
-                          ? Colors.red // Set color to red when the task is late
-                          : (!isUrgent
-                              ? (isCompleted ? Colors.green : Colors.white)
-                              : Colors.black),
+                      color: (!isUrgent
+                          ? (isCompleted ? Colors.green : Colors.white)
+                          : Colors.black),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
