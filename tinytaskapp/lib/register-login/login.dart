@@ -13,11 +13,13 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Login', style: TextStyle(color: fontColor)),
-        backgroundColor: backgroundColor, // Applying backgroundColor to the app bar
-        iconTheme: IconThemeData(color: fontColor), 
+        backgroundColor:
+            backgroundColor, // Applying backgroundColor to the app bar
+        iconTheme: IconThemeData(color: fontColor),
       ),
       body: Container(
-        color: settingsBackgroundColor, // Applying settingsBackgroundColor to the body
+        color:
+            settingsBackgroundColor, // Applying settingsBackgroundColor to the body
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -27,25 +29,32 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             TextFormField(
               decoration: InputDecoration(
-                icon: Icon(Icons.mail, color: fontColor), // Adding fontColor to the icon color
+                icon: Icon(Icons.mail,
+                    color: fontColor), // Adding fontColor to the icon color
                 labelText: 'Email *',
-                labelStyle: TextStyle(color: fontColor), // Adding fontColor to the label text color
+                labelStyle: TextStyle(
+                    color:
+                        fontColor), // Adding fontColor to the label text color
               ),
             ),
             TextFormField(
               decoration: InputDecoration(
-                icon: Icon(Icons.lock_person_rounded, color: fontColor), // Adding fontColor to the icon color
+                icon: Icon(Icons.lock_person_rounded,
+                    color: fontColor), // Adding fontColor to the icon color
                 labelText: 'Password *',
-                labelStyle: TextStyle(color: fontColor), // Adding fontColor to the label text color
+                labelStyle: TextStyle(
+                    color:
+                        fontColor), // Adding fontColor to the label text color
               ),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 // TODO: Implement sign up logic
-              },              
+              },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(settingsBackgroundColor), // Using settingsBackgroundColor for button background
+                backgroundColor: MaterialStateProperty.all(
+                    settingsBackgroundColor), // Using settingsBackgroundColor for button background
               ),
               child: Text(
                 'Sign Up',
@@ -65,7 +74,8 @@ class LoginScreen extends StatelessWidget {
               },
               child: Text(
                 "Don't have an account? Register now.",
-                style: TextStyle(color: fontColor), // Adding fontColor to the text color
+                style: TextStyle(
+                    color: fontColor), // Adding fontColor to the text color
               ),
             )
           ],
