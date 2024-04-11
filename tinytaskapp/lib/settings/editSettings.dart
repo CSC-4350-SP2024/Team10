@@ -272,11 +272,11 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
                         onPressed: () {
                           _updateProfile();
                         },
-                        child: Text('Save Settings',
+                        child: Text('Save Changes',
                             style: TextStyle(color: fontColor)),
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all<Color>(backgroundColor),
+                              MaterialStateProperty.all<Color>(Colors.green),
                         ),
                       ),
                     ],

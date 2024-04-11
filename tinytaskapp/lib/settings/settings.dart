@@ -24,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String username = '';
   String firstName = '';
   String lastName = '';
+  String email = '';
   DateTime? birthday;
   String? gender = '';
   String selectedOption = 'Normal (5 Tasks)';
@@ -51,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         selectedOption = getSelectedOption(maxTasks!);
         firstName = data['firstName'] ?? " ";
         lastName = data['lastName'] ?? " ";
+        email = data['email'] ?? " ";
         username =
             data['username'] ?? (data['firstName'][0] + data['lastName'][0]);
         gender = data['gender'] ?? " ";
@@ -162,6 +164,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           fontSize: 16)), // Applying fontColor to the text
                 ),
                 ListTile(
+                  title: Text('Email',
+                      style: TextStyle(
+                          color: fontColor)), // Applying fontColor to the text
+                  trailing: Text(email,
+                      style: TextStyle(
+                          color: fontColor,
+                          fontSize: 16)), // Applying fontColor to the text
+                ),
+                ListTile(
                   title: Text('Birthday',
                       style: TextStyle(
                           color: fontColor)), // Applying fontColor to the text
@@ -184,22 +195,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   trailing: Text('$selectedOption',
                       style: TextStyle(color: fontColor, fontSize: 16)),
                 ),
-
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Navigate to edit settings page
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EditSettingsScreen()));
-                        },
-                        child: Text('Edit Settings'),
-                      ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditSettingsScreen()));
+                    },
+                    child: Text('Edit Profile',
+                        style: TextStyle(color: fontColor)),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.green),
                     ),
                   ),
                 ),
