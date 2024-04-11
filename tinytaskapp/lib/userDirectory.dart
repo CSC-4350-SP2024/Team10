@@ -77,9 +77,9 @@ class UserDirectoryScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: Padding(
+                            child: const Padding(
                               padding: EdgeInsets.all(16.0),
-                              child: const Text(
+                              child: Text(
                                 'Create an Account',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -89,6 +89,25 @@ class UserDirectoryScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      Text(
+                        'Tiny App, Big Results.',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Pacifico',
+                          letterSpacing: 1.5,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 2,
+                              color: const Color.fromARGB(255, 73, 60, 60)
+                                  .withOpacity(0.3),
+                              offset: Offset(2, 2),
+                            ),
+                          ],
                         ),
                       ),
                     ],

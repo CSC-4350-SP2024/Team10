@@ -347,7 +347,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 await addTask();
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(navBackgroundColor),
+                backgroundColor: MaterialStateProperty.all(Colors.green),
               ),
               child: Text(
                 'Add',

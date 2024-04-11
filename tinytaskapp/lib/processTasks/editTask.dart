@@ -319,7 +319,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 await updateTask();
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(navBackgroundColor),
+                backgroundColor: MaterialStateProperty.all(Colors.green),
               ),
               child: Text(
                 'Update',

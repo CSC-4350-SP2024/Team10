@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tinytaskapp/firebase_options.dart';
 import 'nav.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'userDirectory.dart';
 import './themes/theme.dart';
 
@@ -30,9 +31,29 @@ class TaskApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Task App',
+      title: 'TinyTask',
       theme: AppThemes.darkTheme(),
-      home: const UserDirectoryScreen(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            // Get the user
+            User? user = snapshot.data;
+            // If the user is not null, they're logged in
+            if (user != null) {
+              return HomeScreen(); // Or whatever your home screen is
+            }
+            // User is not logged in
+            return const UserDirectoryScreen();
+          }
+          // Waiting for connection state to be active
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
