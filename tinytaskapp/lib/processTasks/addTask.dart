@@ -1,5 +1,3 @@
-// TODO - automatically dismiss keyboard after inputs into addTask
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../nav.dart';
@@ -8,9 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '/themes/theme.dart';
 
 class AddTaskScreen extends StatefulWidget {
-  // final Function(int) onNavIndexChanged;
-
-  // AddTaskScreen({required this.onNavIndexChanged});
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
@@ -31,12 +26,35 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   List<String> weeklyDaysSelection = [];
   DateTime? selectedDate;
 
+  bool isTaskNameEmpty = false;
+  bool isDescriptionEmpty = false;
+  bool isDateEmpty = false;
+
   final userCredentialID = FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> addTask() async {
     String taskName = taskNameController.text;
     String taskDesc = taskDescriptionController.text;
     DateTime? taskDate = selectedDate;
+
+    setState(() {
+      isTaskNameEmpty = taskName.isEmpty;
+      isDescriptionEmpty = taskDesc.isEmpty;
+      isDateEmpty = taskDate == null;
+    });
+
+    if (isTaskNameEmpty || isDescriptionEmpty || isDateEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Required fields not filled',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     Map<String, dynamic> taskData = {
       'name': taskName,
@@ -112,9 +130,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   child: TextField(
                     controller: taskNameController,
                     style: TextStyle(color: fontColor),
-                    cursorColor: fontColor,
-                    decoration: const InputDecoration(
+                    cursorColor: isTaskNameEmpty ? Colors.red : fontColor,
+                    onChanged: (value) {
+                      setState(() {
+                        isTaskNameEmpty = value.isEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
                       border: InputBorder.none,
+                      errorText: isTaskNameEmpty ? 'Required' : null,
+                      errorStyle: TextStyle(color: Colors.red),
                     ),
                   ),
                 ),
@@ -135,10 +160,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   child: TextField(
                     controller: taskDescriptionController,
                     style: TextStyle(color: fontColor),
-                    cursorColor: fontColor,
+                    cursorColor: isDescriptionEmpty ? Colors.red : fontColor,
+                    onChanged: (value) {
+                      setState(() {
+                        isDescriptionEmpty = value.isEmpty;
+                      });
+                    },
                     maxLines: null, // Allow multiple lines
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
+                      errorText: isDescriptionEmpty ? 'Required' : null,
+                      errorStyle: TextStyle(color: Colors.red),
                     ),
                   ),
                 ),
@@ -173,6 +205,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         selectedDate = pickedDate;
                         dateController.text =
                             '${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}';
+                        isDateEmpty = false; // Reset isDateEmpty flag
                       });
                     }
                   },
@@ -187,7 +220,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       child: TextFormField(
                         controller: dateController,
                         style: TextStyle(color: fontColor),
-                        cursorColor: fontColor,
+                        cursorColor: isDateEmpty ? Colors.red : fontColor,
+                        onChanged: (value) {
+                          setState(() {
+                            isDateEmpty = value.isEmpty;
+                          });
+                        },
                         decoration: InputDecoration(
                           border: InputBorder
                               .none, // Set the border to none to make it transparent
@@ -198,6 +236,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           ),
                           suffixIcon:
                               Icon(Icons.calendar_today, color: fontColor),
+                          errorText: isDateEmpty ? 'Required' : null,
+                          errorStyle: TextStyle(color: Colors.red),
                         ),
                       ),
                     ),
@@ -347,7 +387,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 await addTask();
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.green),
+                backgroundColor: MaterialStateProperty.all(navBackgroundColor),
               ),
               child: Text(
                 'Add',

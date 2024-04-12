@@ -1,14 +1,13 @@
-// TODO - add floating button property to 'Update' button in editTask as seen in 'Add' button in addTask
-// TODO - automatically dismiss keyboard after inputs into editTask
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tinytaskapp/homeScreen/home.dart';
+import 'package:tinytaskapp/nav.dart';
 import '/themes/theme.dart';
 
 class EditTaskScreen extends StatefulWidget {
   final QueryDocumentSnapshot currentTask;
 
-  const EditTaskScreen({super.key, required this.currentTask});
+  EditTaskScreen({required this.currentTask});
 
   @override
   _EditTaskScreenState createState() => _EditTaskScreenState();
@@ -29,6 +28,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   bool isUrgent = false;
   List<String> weeklyDaysSelection = [];
   DateTime? selectedDate;
+
+  bool isTaskNameEmpty = false;
+  bool isDescriptionEmpty = false;
 
   @override
   void initState() {
@@ -84,9 +86,16 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   child: TextField(
                     controller: taskNameController,
                     style: TextStyle(color: fontColor),
-                    cursorColor: fontColor,
-                    decoration: const InputDecoration(
+                    cursorColor: isTaskNameEmpty ? Colors.red : fontColor,
+                    onChanged: (value) {
+                      setState(() {
+                        isTaskNameEmpty = value.isEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
                       border: InputBorder.none,
+                      errorText: isTaskNameEmpty ? 'Required' : null,
+                      errorStyle: TextStyle(color: Colors.red),
                     ),
                   ),
                 ),
@@ -107,10 +116,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   child: TextField(
                     controller: taskDescriptionController,
                     style: TextStyle(color: fontColor),
-                    cursorColor: fontColor,
+                    cursorColor: isDescriptionEmpty ? Colors.red : fontColor,
+                    onChanged: (value) {
+                      setState(() {
+                        isDescriptionEmpty = value.isEmpty;
+                      });
+                    },
                     maxLines: null, // Allow multiple lines
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
+                      errorText: isDescriptionEmpty ? 'Required' : null,
+                      errorStyle: TextStyle(color: Colors.red),
                     ),
                   ),
                 ),
@@ -159,7 +175,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       child: TextFormField(
                         controller: dateController,
                         style: TextStyle(color: fontColor),
-                        cursorColor: fontColor,
                         decoration: InputDecoration(
                           border: InputBorder
                               .none, // Set the border to none to make it transparent
@@ -314,17 +329,95 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ),
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                await updateTask();
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.green),
-              ),
-              child: Text(
-                'Update',
-                style: TextStyle(color: fontColor),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      bool confirmDelete = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                              "Confirmation",
+                              style: TextStyle(color: fontColor),
+                            ),
+                            content: Text(
+                              "Are you sure you want to delete this task?",
+                              style: TextStyle(color: fontColor),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(color: fontColor),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: Text(
+                                  "Delete",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                            backgroundColor: backgroundColor,
+                          );
+                        },
+                      );
+
+                      if (confirmDelete == true) {
+                        await deleteTask();
+                        Navigator.pop(context);
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(navBackgroundColor),
+                    ),
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16), // Add spacing between buttons
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (taskNameController.text.isEmpty ||
+                          taskDescriptionController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Required fields not filled',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      await updateTask();
+                      // Dismiss keyboard
+                      FocusScope.of(context).unfocus();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                    ),
+                    child: Text(
+                      'Update',
+                      style: TextStyle(color: fontColor),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -375,6 +468,21 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           .doc(widget.currentTask.id)
           .update(taskData);
       Navigator.pop(context);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteTask() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('tasks')
+          .doc(widget.currentTask.id)
+          .delete();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
     } catch (e) {
       print(e);
     }
