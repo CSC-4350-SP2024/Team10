@@ -94,7 +94,7 @@ class RegScreen extends StatelessWidget {
           title: '',
           isReturnable: true,
         ),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(16.0),
@@ -248,10 +248,10 @@ class RegScreen extends StatelessWidget {
                   style: TextStyle(color: fontColor),
                   controller: _passwordController,
                   obscureText: true,
-                  // hintText: 'Must be 8 characters, 1 letter and 1 special character',
                   decoration: InputDecoration(
                     icon: const Icon(Icons.lock_person_rounded),
-                    labelText: 'Password *',
+                    labelText: 'Password *',                    
+                    hintText: 'Must be 8 characters, 1 letter and 1 special character',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
