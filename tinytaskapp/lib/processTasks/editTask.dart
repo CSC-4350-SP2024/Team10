@@ -246,11 +246,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 if (isRecurring) ...[
                   SizedBox(height: 16.0),
                   CheckboxListTile(
-                    title: Text('Repeat Daily',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Repeat Daily',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto'),
+                          ),
+                          if (isRecurring && !repeatDaily && !repeatWeekly) 
+                            TextSpan(
+                              text: ' Required',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
+                    ),
                     value: repeatDaily,
                     activeColor: accentColor,
                     onChanged: (value) {
@@ -263,11 +276,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     },
                   ),
                   CheckboxListTile(
-                    title: Text('Repeat Weekly',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Repeat Weekly',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto'),
+                          ),
+                          if (isRecurring && !repeatDaily && !repeatWeekly) 
+                            TextSpan(
+                              text: ' Required',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
+                    ),
                     value: repeatWeekly,
                     activeColor: accentColor,
                     onChanged: (value) {
@@ -281,11 +307,20 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   ),
                   if (repeatWeekly) ...[
                     const SizedBox(height: 16.0),
-                    Text('Choose Day(s):',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    Row(
+                      children: [
+                        Text('Choose Day(s):',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto')),
+                        if (weeklyDaysSelection.isEmpty) 
+                          Text(
+                            ' Required',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                      ],
+                    ),
                     Wrap(
                       spacing: 8.0,
                       children: List.generate(
@@ -373,12 +408,31 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
                       if (confirmDelete == true) {
                         await deleteTask();
+                        // Navigate back to the home screen
                         Navigator.pop(context);
+
+                        // Show snackbar on the home screen
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Task deleted',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              textColor: Colors.white,
+                              onPressed: () {
+                                // Restore the deleted task
+                                restoreDeletedTask();
+                              },
+                            ),
+                          ),
+                        );
                       }
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(navBackgroundColor),
+                      backgroundColor: MaterialStateProperty.all(navBackgroundColor),
                     ),
                     child: Text(
                       'Delete',
@@ -396,6 +450,33 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           SnackBar(
                             content: Text(
                               'Required fields not filled',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+                      // Check for recurring tasks
+                      if (isRecurring && !repeatDaily && !repeatWeekly) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Must select recurring frequency',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Check for repeat weekly days
+                      if (repeatWeekly && weeklyDaysSelection.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Must select at least one day',
                               style: TextStyle(color: Colors.white),
                             ),
                             backgroundColor: Colors.red,
@@ -479,10 +560,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           .collection('tasks')
           .doc(widget.currentTask.id)
           .delete();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> restoreDeletedTask() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('tasks')
+          .doc(widget.currentTask.id)
+          //.set(widget.currentTask.data());
+          .set(widget.currentTask.data() as Map<String, dynamic>);
     } catch (e) {
       print(e);
     }

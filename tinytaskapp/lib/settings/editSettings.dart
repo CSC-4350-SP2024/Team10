@@ -10,7 +10,9 @@ Color backgroundColor = Color.fromARGB(255, 26, 33, 41);
 Color settingsBackgroundColor = Color.fromARGB(255, 37, 55, 73);
 
 class EditSettingsScreen extends StatefulWidget {
-  const EditSettingsScreen({super.key});
+  final Function()? onProfileUpdated;
+  const EditSettingsScreen({Key? key, this.onProfileUpdated}) : super(key: key);
+  //const EditSettingsScreen({super.key});
 
   @override
   _EditSettingsScreenState createState() => _EditSettingsScreenState();
@@ -116,20 +118,20 @@ class _EditSettingsScreenState extends State<EditSettingsScreen> {
   }
 
   Future<void> _updateProfile() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
-      'username': _usernameController.text,
-      'firstName': _firstNameController.text,
-      'lastName': _lastNameController.text,
-      'birthday': _selectedDate ?? birthday,
-      'maxTasks': convertMaxTasks(selectedOption),
-      'gender': _genderController.text,
-    });
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SettingsScreen()),
-    );
-  }
+  final User? user = FirebaseAuth.instance.currentUser;
+  await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+    'username': _usernameController.text,
+    'firstName': _firstNameController.text,
+    'lastName': _lastNameController.text,
+    'birthday': _selectedDate ?? birthday,
+    'maxTasks': convertMaxTasks(selectedOption),
+    'gender': _genderController.text,
+  });
+  
+  widget.onProfileUpdated?.call();
+
+  Navigator.pop(context); // Navigate back to the previous screen (SettingsScreen)
+}
 
   @override
   Widget build(BuildContext context) {

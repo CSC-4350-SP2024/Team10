@@ -202,7 +202,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EditSettingsScreen()));
+                              builder: (context) => EditSettingsScreen(
+                                onProfileUpdated: _getUserProfile,
+                              )));
                     },
                     child: Text('Edit Profile',
                         style: TextStyle(color: fontColor)),
