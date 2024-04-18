@@ -56,6 +56,34 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       return;
     }
 
+    // Check for recurring tasks
+    if (isRecurring && !repeatDaily && !repeatWeekly) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Must select recurring frequency',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Check for repeat weekly days
+    if (repeatWeekly && weeklyDaysSelection.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Must select at least one day',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     Map<String, dynamic> taskData = {
       'name': taskName,
       'desc': taskDesc,
@@ -299,11 +327,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 if (isRecurring) ...[
                   SizedBox(height: 16.0),
                   CheckboxListTile(
-                    title: Text('Repeat Daily',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Repeat Daily',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto'),
+                          ),
+                          if (isRecurring && !repeatDaily && !repeatWeekly) 
+                            TextSpan(
+                              text: ' Required',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
+                    ),
                     value: repeatDaily,
                     activeColor: accentColor,
                     onChanged: (value) {
@@ -316,11 +357,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     },
                   ),
                   CheckboxListTile(
-                    title: Text('Repeat Weekly',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Repeat Weekly',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto'),
+                          ),
+                          if (isRecurring && !repeatDaily && !repeatWeekly) 
+                            TextSpan(
+                              text: ' Required',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
+                      ),
+                    ),
                     value: repeatWeekly,
                     activeColor: accentColor,
                     onChanged: (value) {
@@ -334,11 +388,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                   if (repeatWeekly) ...[
                     const SizedBox(height: 16.0),
-                    Text('Choose Day(s):',
-                        style: TextStyle(
-                            color: fontColor,
-                            fontSize: 16.0,
-                            fontFamily: 'Roboto')),
+                    Row(
+                      children: [
+                        Text('Choose Day(s):',
+                            style: TextStyle(
+                                color: fontColor,
+                                fontSize: 16.0,
+                                fontFamily: 'Roboto')),
+                        if (weeklyDaysSelection.isEmpty) 
+                          Text(
+                            ' Required',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                      ],
+                    ),
                     Wrap(
                       spacing: 8.0,
                       children: List.generate(

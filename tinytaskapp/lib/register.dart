@@ -18,8 +18,7 @@ class RegScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController _passwordController = TextEditingController();
-    final TextEditingController _confirmPasswordController =
-        TextEditingController();
+    final TextEditingController _confirmPasswordController = TextEditingController();
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _firstNameController = TextEditingController();
     final TextEditingController _lastNameController = TextEditingController();
@@ -51,7 +50,6 @@ class RegScreen extends StatelessWidget {
 
         String userId = userCredential.user!.uid;
         await _firestore.collection('users').doc(userId).set({
-          'username': "",
           'firstName': _firstNameController.text,
           'lastName': _lastNameController.text,
           'email': _emailController.text,
@@ -96,7 +94,7 @@ class RegScreen extends StatelessWidget {
           title: '',
           isReturnable: true,
         ),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(16.0),
@@ -105,10 +103,10 @@ class RegScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'lib/assets/tinytasklogo.png', // Path to your image asset
-                  width: 300, // Set the width as needed
-                  height: 117, // Set the height as needed
-                ),
+                    'lib/assets/tinytasklogo.png', // Path to your image asset
+                    width: 300, // Set the width as needed
+                    height: 117, // Set the height as needed
+                  ),
                 const SizedBox(height: 60.0),
                 const Text(
                   'Sign Up',
@@ -197,24 +195,18 @@ class RegScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16.0),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 40.0), // Shift to the right by 30px
+                  padding: const EdgeInsets.only(left: 40.0), // Shift to the right by 30px
                   child: Text(
                     'Max Tasks Shown?',
                     style: TextStyle(color: fontColor),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
-                  ),
+                  padding: const EdgeInsets.only(top: 10.0, ), 
                   child: Row(
                     children: [
-                      Icon(Icons.add_box,
-                          color: fontColor), // Add the add_box icon
-                      const SizedBox(
-                          width:
-                              12), // Add some space between the icon and the dropdown button
+                      Icon(Icons.add_box, color: fontColor), // Add the add_box icon
+                      const SizedBox(width:12), // Add some space between the icon and the dropdown button
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
@@ -226,12 +218,9 @@ class RegScreen extends StatelessWidget {
                             value: selectedMaxTasks,
                             dropdownColor: backgroundColor, // Default value
                             decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 10.0),
-                              enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide.none),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                              enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                              focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                               border: OutlineInputBorder(),
                             ),
                             items: <String>[
@@ -241,8 +230,7 @@ class RegScreen extends StatelessWidget {
                             ].map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
-                                child: Text(value,
-                                    style: TextStyle(color: fontColor)),
+                                child: Text(value, style: TextStyle(color: fontColor)),
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -260,10 +248,10 @@ class RegScreen extends StatelessWidget {
                   style: TextStyle(color: fontColor),
                   controller: _passwordController,
                   obscureText: true,
-                  // hintText: 'Must be 8 characters, 1 letter and 1 special character',
                   decoration: InputDecoration(
                     icon: const Icon(Icons.lock_person_rounded),
-                    labelText: 'Password *',
+                    labelText: 'Password *',                    
+                    hintText: 'Must be 8 characters, 1 letter and 1 special character',
                     labelStyle: TextStyle(color: fontColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
@@ -317,6 +305,7 @@ class RegScreen extends StatelessWidget {
                   },
                 ),
 
+
                 // Sign up button
                 const SizedBox(height: 16.0),
                 // ElevatedButton(
@@ -324,7 +313,7 @@ class RegScreen extends StatelessWidget {
                 //     _signUp();
                 //   },
                 //   style: ButtonStyle(
-                //     backgroundColor: MaterialStateProperty.all(Colors.green),
+                //     backgroundColor: MaterialStateProperty.all(Colors.green),                    
                 //   ),
                 //   child: const Text(
                 //     'Sign Up',
@@ -335,29 +324,29 @@ class RegScreen extends StatelessWidget {
                 //   ),
                 // ),
 
+
                 Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _signUp();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .green, // Set button's background color here
-                          padding: const EdgeInsets.all(25),
-                        ),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Roboto',
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signUp();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green, // Set button's background color here
+                            padding: const EdgeInsets.all(25),
+                          ),
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Roboto',
+                              ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
                 // Sign in link
                 const SizedBox(height: 50.0),
@@ -385,7 +374,7 @@ class RegScreen extends StatelessWidget {
                             text: "Sign in now.",
                             style: TextStyle(
                               color: Colors.green,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.bold, 
                             ),
                           ),
                         ],

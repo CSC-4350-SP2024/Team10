@@ -166,6 +166,20 @@ class _TaskListState extends State<TaskList> {
   bool isCompleted = false;
   bool showCompletedGif = false;
 
+  // Method to show snackbar
+  void _showSnackbar(BuildContext context, String message, Function undoAction) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          undoAction();
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   bool _isDue(Timestamp? currTaskDueTimestamp) {
     if (currTaskDueTimestamp == null) {
       return false;
@@ -344,58 +358,47 @@ class _TaskListState extends State<TaskList> {
                       ),
                     ),
                     leading: GestureDetector(
-                      onTap: () async {
-                        if (await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Confirmation",
-                                  style: TextStyle(color: fontColor)),
-                              content: Text("Mark task as completed?",
-                                  style: TextStyle(color: fontColor)),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(
-                                        false); // Dismiss the dialog and return false
-                                  },
-                                  child: Text("No",
-                                      style: TextStyle(color: fontColor)),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Add your action here
-                                    Navigator.of(context).pop(
-                                        true); // Dismiss the dialog and return true
-                                  },
-                                  child: const Text("Yes",
-                                      style: TextStyle(color: Colors.green)),
-                                ),
-                              ],
-                              backgroundColor: backgroundColorT,
-                            );
-                          },
-                        )) {
-                          if (!(isRecurring)) {
-                            currentTask.reference.delete();
-                          }
-                          currentTask.reference.update(
-                            {
-                              'isComplete': true,
-                              'completedOn': Timestamp.now()
+                onTap: () async {
+                  if (await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Confirmation", style: TextStyle(color: fontColor)),
+                        content: Text("Mark task as completed?", style: TextStyle(color: fontColor)),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
                             },
-                          ).catchError((error) {
-                            // Handle error while updating task
-                            print("Failed to mark task as completed: $error");
-                          });
-                        }
-                      },
-                      child: isCompleted
-                          ? const Icon(Icons.check_circle_rounded,
-                              color: Colors.green)
-                          : const Icon(Icons.radio_button_unchecked_rounded,
-                              color: Colors.green),
-                    ),
+                            child: Text("No", style: TextStyle(color: fontColor)),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: const Text("Yes", style: TextStyle(color: Colors.green)),
+                          ),
+                        ],
+                        backgroundColor: backgroundColorT,
+                      );
+                    },
+                  )) {
+                    if (!(isRecurring)) {
+                      currentTask.reference.delete();
+                    } else {
+                      currentTask.reference.update({
+                        'isComplete': true,
+                        'completedOn': Timestamp.now()
+                      });
+                    }
+                  }
+                },
+                child: isCompleted
+                    ? const Icon(Icons.check_circle_rounded,
+                        color: Colors.green)
+                    : const Icon(Icons.radio_button_unchecked_rounded,
+                        color: Colors.green),
+              ),
                     onLongPress: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
