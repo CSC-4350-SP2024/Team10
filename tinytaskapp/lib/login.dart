@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:tinytaskapp/homeScreen/home.dart';
 // import 'package:tinytaskapp/processTasks/addTask.dart';
+import 'package:flutter/material.dart';
 import 'nav.dart';
 import 'register.dart';
 import 'forgot_pw.dart';
@@ -33,7 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      print('Error: $e');
+      // Display error message using SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Invalid email or password'),
+          duration: Duration(seconds: 2), // Adjust duration as needed
+        ),
+      );
     }
   }
 
@@ -108,9 +115,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-
                   // Forgot password link
-                  const SizedBox(height: 10.0), // Add some spacing between the text and the button
+                  const SizedBox(
+                      height:
+                          10.0), // Add some spacing between the text and the button
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -126,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  
 
                   // Log in button
                   const SizedBox(height: 20.0),
@@ -138,7 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             _signInWithEmailAndPassword();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green, // Set button's background color here
+                            backgroundColor: Colors
+                                .green, // Set button's background color here
                             padding: const EdgeInsets.all(25),
                           ),
                           child: const Text(
@@ -149,7 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
 
                   // Don't have an account button
                   const SizedBox(height: 50.0),
@@ -169,23 +176,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontFamily: 'Roboto',
                         ),
                         children: [
-                            TextSpan(
+                          TextSpan(
                             text: "Don't have an account? ",
                           ),
-                            TextSpan(
+                          TextSpan(
                             text: "Sign up now.",
                             style: TextStyle(
                               color: Colors.green,
-                              fontWeight: FontWeight.bold, 
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-
-
-
                 ],
               ),
             ),
